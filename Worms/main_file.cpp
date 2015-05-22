@@ -8,91 +8,85 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <stdlib.h>
+#include <time.h>
 
 using namespace std;
 using namespace glm;
 
 float *geomVertices, *geomColors, *geomNormals;
-unsigned int *geomFaces;
 int geomVertexCount = 0;
-int it = 0;
-int licz_fejsy = 0;
 
-float speed = 6; //60 stopni/s
+float speed = 0; //60 stopni/s
 int lastTime = 0;
 float angle_float;
-float scaleModifier = 0;
+float scaleModifier = 0.3;
 
 //bool loadOBJ(const char *path, std::vector<glm::vec3> &out_vertices, std::vector<glm::vec2> &out_uvs, std::vector<glm::vec3> &out_normals)
-bool loadOBJ(const char *path, std::vector<float> &out_vertices, std::vector<float> &out_colors, std::vector<float> &out_normals, std::vector<unsigned int> &out_faces, int &vertex_count)
+bool loadOBJ(const char *path, std::vector<float> &out_vertices, std::vector<float> &out_colors, std::vector<float> &out_normals, int &vertex_count)
 {
 	std::fstream plik;
 	plik.open(path, std::ios::in);
 	if (plik.good() == false)
 		return false;
 
+	vector<float> normals;
+	vector<float> vertices;
+	vector<int> normalsIndices;
+	vector<int> vertexIndices;
 	std::string buf;
 	float fbuf; 
-	int intbuf;
-	it=0;
-	bool guard = 1;
 	while (!plik.eof())
 	{
-		if (guard)
 			plik >> buf;
 		if (buf.compare("v") == 0)
 		{
 			plik >> fbuf;
-			out_vertices.push_back(fbuf);
+			vertices.push_back(fbuf);
 			plik >> fbuf;
-			out_vertices.push_back(fbuf);
+			vertices.push_back(fbuf);
 			plik >> fbuf;
-			out_vertices.push_back(fbuf);
-			out_colors.push_back(0.0f);
-			out_colors.push_back(1.0f);
-			out_colors.push_back(0.0f);
-			vertex_count++;
-			//		printf("%d\n", vertex_count);
-			guard = 1;
+			vertices.push_back(fbuf);
 		}
 		else if (buf.compare("vn") == 0)
 		{
 			plik >> fbuf;
-			out_normals.push_back(fbuf);
+			normals.push_back(fbuf);
 			plik >> fbuf;
-			out_normals.push_back(fbuf);
+			normals.push_back(fbuf);
 			plik >> fbuf;
-			out_normals.push_back(fbuf);
-			guard = 1;
+			normals.push_back(fbuf); 
 		}
 		else if (buf.compare("f") == 0)
 		{
 			int indexa, indexb;
-			while(1)
+			for (int i = 0; i < 3; i++)
 			{
 				plik >> buf;
-				if (buf.compare("f") == 0)
-				{
-					guard = 0;
-					break;
-				}
-				else if (buf.compare("o") == 0 || plik.eof()) break;
-
-				licz_fejsy += 3;
 				sscanf_s(buf.c_str(), "%d//%d", &indexa, &indexb);
-				out_faces.push_back(indexa);
-				out_faces.push_back(it);
-				out_faces.push_back(indexb);
-				guard = 1;
-			}
-			it++;
+				vertexIndices.push_back(indexa - 1);
+				normalsIndices.push_back(indexb - 1);
+			}				
 		}
 	}
-
+	for (int i = 0; i < normalsIndices.size(); i++)
+	{
+		int a = normalsIndices[i] * 3;
+		int b = vertexIndices[i] * 3;
+		out_vertices.push_back(vertices[b]);
+		out_vertices.push_back(vertices[b+1]);
+		out_vertices.push_back(vertices[b+2]);
+		out_normals.push_back(normals[a]);
+		out_normals.push_back(normals[a+1]);
+		out_normals.push_back(normals[a+2]);
+		out_colors.push_back((rand()%50)/100+0.25);
+		out_colors.push_back((rand() % 50) / 100+0.5);
+		out_colors.push_back((rand() % 50) / 100+0.1);
+		vertex_count++;
+	}
 	plik.close();
 	return true;
 }
-
 
 void displayFrame(void) {
 	glClearColor(0, 0, 0, 1);
@@ -111,14 +105,18 @@ void displayFrame(void) {
 	glLoadMatrixf(value_ptr(V*M));
 
 	glEnableClientState(GL_VERTEX_ARRAY);
-	//glEnableClientState(GL_COLOR_ARRAY);
+	glEnableClientState(GL_INDEX_ARRAY);
+	glEnableClientState(GL_NORMAL_ARRAY);
+	glEnableClientState(GL_COLOR_ARRAY);
 	glVertexPointer(3, GL_FLOAT, 0, geomVertices);
-//	glColorPointer(3, GL_FLOAT, 0, geomColors);
-	glNormalPointer(3, GL_FLOAT, geomNormals);
-	glDrawElements(GL_TRIANGLES, licz_fejsy, GL_UNSIGNED_INT, geomFaces);
-	//glDrawArrays(GL_TRIANGLES_ADJACENCY, 0, geomVertexCount);
+	glColorPointer(3, GL_FLOAT, 0, geomColors);
+	glNormalPointer(GL_FLOAT, 0,geomNormals);
+	//glDrawElements(GL_TRIANGLES, licz_fejsy, GL_UNSIGNED_INT, geomFaces);
+	glDrawArrays(GL_TRIANGLES, 0, geomVertexCount);
 	glDisableClientState(GL_VERTEX_ARRAY);
-	//glDisableClientState(GL_COLOR_ARRAY);
+	glDisableClientState(GL_INDEX_ARRAY);
+	glDisableClientState(GL_NORMAL_ARRAY);
+	glDisableClientState(GL_COLOR_ARRAY);
 	glutSwapBuffers();
 
 }
@@ -189,15 +187,13 @@ int main (int argc, char** argv) {
 	glutIdleFunc(nextFrame);
 	glutSpecialFunc(keyDown);
 	glutSpecialUpFunc(keyUp);
-
+	srand(time(NULL));
 	std::vector<float> dupa1, dupa2, dupa3;
-	std::vector<unsigned int> dupa4;
-	bool alejaja = loadOBJ("robot.obj", dupa1, dupa2, dupa3, dupa4,geomVertexCount);
+	bool alejaja = loadOBJ("robot69.obj", dupa1, dupa2, dupa3,geomVertexCount);
 	if (!alejaja) return 1;
 	geomVertices = &dupa1[0];
 	geomColors = &dupa2[0];
 	geomNormals = &dupa3[0];
-	geomFaces = &dupa4[0];
 
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
