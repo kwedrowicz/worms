@@ -15,8 +15,6 @@
 using namespace std;
 using namespace glm;
 
-float *geomVertices, *geomColors, *geomNormals;
-int geomVertexCount = 0;
 
 float speed = 0; //60 stopni/s
 int lastTime = 0;
@@ -36,15 +34,13 @@ void displayFrame(void) {
 	glMatrixMode(GL_PROJECTION);
 	glLoadMatrixf(value_ptr(P));
 	glMatrixMode(GL_MODELVIEW);
+	glLoadMatrixf(value_ptr(V*robot.M));
 
 	/*M = rotate(M, angle_float, vec3(0.0f, 1.0f, 0.0f));
 	M = scale(M, vec3(scaleModifier, scaleModifier, scaleModifier));
 	glLoadMatrixf(value_ptr(V*M));*/
 
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_INDEX_ARRAY);
-	glEnableClientState(GL_NORMAL_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
+
 	
 	/*glVertexPointer(3, GL_FLOAT, 0, geomVertices);
 	glColorPointer(3, GL_FLOAT, 0, geomColors);
@@ -61,18 +57,9 @@ void displayFrame(void) {
 		glColorPointer(3, GL_FLOAT, 0, geomColors);
 		glNormalPointer(GL_FLOAT, 0, geomNormals);
 		glDrawArrays(GL_TRIANGLES, 0, geomVertexCount);
-	}*/
-
-	glLoadMatrixf(value_ptr(V*robot.M));
-	glVertexPointer(3, GL_FLOAT, 0, geomVertices);
-	glColorPointer(3, GL_FLOAT, 0, geomColors);
-	glNormalPointer(GL_FLOAT, 0, geomNormals);
-	glDrawArrays(GL_TRIANGLES, 0, geomVertexCount);
-
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_INDEX_ARRAY);
-	glDisableClientState(GL_NORMAL_ARRAY);
-	glDisableClientState(GL_COLOR_ARRAY);
+	}*/	
+	
+	robot.Draw();
 	glutSwapBuffers();
 }
 
@@ -151,11 +138,6 @@ int main (int argc, char** argv) {
 	glutSpecialFunc(keyDown);
 	glutSpecialUpFunc(keyUp);
 	srand(time(NULL));
-
-	geomVertices = &robot.vertices[0];
-	geomColors = &robot.colors[0];
-	geomNormals = &robot.normals[0];
-	geomVertexCount = robot.vertex_count;
 
 
 	glEnable(GL_LIGHTING);

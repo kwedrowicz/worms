@@ -5,7 +5,7 @@ using namespace glm;
 
 Robot::Robot()
 {
-	loadObj("robot_newer.obj");
+	loadObj("robot_grouped.obj");
 	M = translate(M, vec3(0.0f, -3.5f, 0.0f));
 }
 
