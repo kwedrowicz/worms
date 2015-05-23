@@ -21,7 +21,10 @@ int geomVertexCount = 0;
 float speed = 0; //60 stopni/s
 int lastTime = 0;
 float angle_float;
-float scaleModifier = 0.3;
+float scaleModifier = 0.3f;
+float gravity = -9.8f;
+Robot robot;
+
 
 void displayFrame(void) {
 	glClearColor(0, 0, 0, 1);
@@ -29,15 +32,14 @@ void displayFrame(void) {
 
 	mat4 P = perspective(1.5f, 1.0f, 1.0f, 50.0f);
 	mat4 V = lookAt(vec3(0.0f, 0.0f, -5.0f), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
-	mat4 M = mat4(1.0);
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadMatrixf(value_ptr(P));
 	glMatrixMode(GL_MODELVIEW);
 
-	M = rotate(M, angle_float, vec3(0.0f, 1.0f, 0.0f));
+	/*M = rotate(M, angle_float, vec3(0.0f, 1.0f, 0.0f));
 	M = scale(M, vec3(scaleModifier, scaleModifier, scaleModifier));
-	glLoadMatrixf(value_ptr(V*M));
+	glLoadMatrixf(value_ptr(V*M));*/
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_INDEX_ARRAY);
@@ -51,7 +53,7 @@ void displayFrame(void) {
 	glDrawArrays(GL_TRIANGLES, 0, geomVertexCount);*/
 	
 
-	for (int i = 0; i < 5; i++)
+	/*for (int i = 0; i < 5; i++)
 	{
 		M = translate(M, vec3(5.0f, 0.0f, 0.0f));
 		glLoadMatrixf(value_ptr(V*M));
@@ -59,7 +61,13 @@ void displayFrame(void) {
 		glColorPointer(3, GL_FLOAT, 0, geomColors);
 		glNormalPointer(GL_FLOAT, 0, geomNormals);
 		glDrawArrays(GL_TRIANGLES, 0, geomVertexCount);
-	}
+	}*/
+
+	glLoadMatrixf(value_ptr(V*robot.M));
+	glVertexPointer(3, GL_FLOAT, 0, geomVertices);
+	glColorPointer(3, GL_FLOAT, 0, geomColors);
+	glNormalPointer(GL_FLOAT, 0, geomNormals);
+	glDrawArrays(GL_TRIANGLES, 0, geomVertexCount);
 
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_INDEX_ARRAY);
@@ -72,6 +80,8 @@ void nextFrame(void) {
 	int actTime = glutGet(GLUT_ELAPSED_TIME);
 	int interval = actTime - lastTime;
 	lastTime = actTime;
+	//M = translate(M, vec3(0.0f, gravity*interval/10000.0f, 0.0f));
+	robot.M = translate(robot.M, vec3(speed*interval*robot.direction / 1000.0f, 0.0f, 0.0f));
 	angle_float += speed*interval / 1000.0;
 	if (angle_float>360) angle_float -= 360;
 	glutPostRedisplay();
@@ -100,19 +110,23 @@ void keyDown(int c, int x, int y)
 {
 	if (c == GLUT_KEY_LEFT)
 	{
-		speed = -6;
+		if(robot.isTurnRight)
+			robot.turnFaceSide();
+		speed = 6;
 	}
 	else if (c == GLUT_KEY_RIGHT)
 	{
-		speed = 6;
+		if (!robot.isTurnRight)
+			robot.turnFaceSide();
+		speed = -6;
 	}
 	else if (c == GLUT_KEY_UP)
 	{
-		scaleModifier += 0.5f;
+		scaleModifier += 0.2f;
 	}
 	else if (c == GLUT_KEY_DOWN)
 	{
-		scaleModifier -= 0.5f;
+		scaleModifier -= 0.2f;
 	}
 	if (scaleModifier <= 0.0f)
 		scaleModifier = 0.1f;
@@ -138,8 +152,6 @@ int main (int argc, char** argv) {
 	glutSpecialUpFunc(keyUp);
 	srand(time(NULL));
 
-
-	Robot robot;
 	geomVertices = &robot.vertices[0];
 	geomColors = &robot.colors[0];
 	geomNormals = &robot.normals[0];
