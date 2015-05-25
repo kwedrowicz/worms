@@ -8,6 +8,13 @@ using namespace glm;
 
 Model::Model()
 {
+	for (int i = 0; i < 3; i++)
+	{
+		ambient[i] = 0;
+		specular[i] = 0;
+		diffuse[i] = 0;
+	}
+	ambient[3] = 1; specular[3] = 1; diffuse[3] = 1;
 }
 
 
@@ -26,6 +33,11 @@ void Model::Draw(glm::mat4 &view)
 	glEnableClientState(GL_INDEX_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
 
 	glLoadMatrixf(value_ptr(view*M));
 	glBindTexture(GL_TEXTURE_2D, tex_handle);

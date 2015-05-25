@@ -13,6 +13,13 @@ Robot::Robot()
 	left_arm.loadObj("tex_left_arm.obj");
 	ball.loadObj("tex_ball.obj");
 	eyes.loadObj("tex_eyes.obj");
+	eyes.shininess = 1.0f;
+	for (int i = 0; i < 3; i++)
+	{
+		eyes.ambient[i] = 1;
+		eyes.specular[i] = 1;
+		eyes.diffuse[i] = 1;
+	}
 	/*left_arm = right_arm;
 	left_arm.M = rotate(left_arm.M, radians(180.0f), vec3(0.0f, 1.0f, 0.0f));*/
 	translateWhole(vec3(0.0f, -3.5f, 0.0f));
@@ -94,6 +101,16 @@ void Robot::translateWhole(vec3 v)
 	body.M = translate(body.M, v);
 	right_arm.M = translate(right_arm.M, v);
 	left_arm.M = translate(left_arm.M, v);
+	
+	/*if (isTurnRight & v.x!=0)
+	{
+		ball.M = rotate(ball.M, 2.0f, vec3(0, 1, 0));
+		
+	}
+	else if (v.x!=0)
+	{
+		ball.M = rotate(ball.M, -2.0f, vec3(0, 1, 0));
+	}*/
 	ball.M = translate(ball.M, v);
 	eyes.M = translate(eyes.M, v);
 }
