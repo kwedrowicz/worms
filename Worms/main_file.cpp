@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include "Robot.h"
+#include "tga.h"
 
 using namespace std;
 using namespace glm;
@@ -21,6 +22,7 @@ int lastTime = 0;
 float scaleModifier = 0.3f;
 Robot robot;
 Robot robot2;
+Model missile;
 
 vector<Robot> robots;
 int active = 0;
@@ -39,6 +41,7 @@ void displayFrame(void) {
 	{
 		robots[i].Draw(V);
 	}
+	missile.Draw(V);
 	glutSwapBuffers();
 }
 
@@ -122,6 +125,77 @@ void keyUp(int c, int x, int y)
 	}
 }
 
+bool initTextures()
+{
+	TGAImg img;
+	GLuint body, eyes, tmissile;
+	if (img.Load("tex_body.tga") == IMG_OK) {
+		glGenTextures(1, &body); //Zainicjuj uchwyt tex
+		glBindTexture(GL_TEXTURE_2D, body); //Przetwarzaj uchwyt tex
+		if (img.GetBPP() == 24) //Obrazek 24bit
+		{
+			glTexImage2D(GL_TEXTURE_2D, 0, 3, img.GetWidth(), img.GetHeight(), 0,
+				GL_RGB, GL_UNSIGNED_BYTE, img.GetImg());
+		}
+		else if (img.GetBPP() == 32) //Obrazek 32bit
+		{
+			glTexImage2D(GL_TEXTURE_2D, 0, 4, img.GetWidth(), img.GetHeight(), 0,
+				GL_RGBA, GL_UNSIGNED_BYTE, img.GetImg());
+		}
+	}
+	else return 5;
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	if (img.Load("tex_eyes.tga") == IMG_OK) {
+		glGenTextures(1, &eyes); //Zainicjuj uchwyt tex
+		glBindTexture(GL_TEXTURE_2D, eyes); //Przetwarzaj uchwyt tex
+		if (img.GetBPP() == 24) //Obrazek 24bit
+		{
+			glTexImage2D(GL_TEXTURE_2D, 0, 3, img.GetWidth(), img.GetHeight(), 0,
+				GL_RGB, GL_UNSIGNED_BYTE, img.GetImg());
+		}
+		else if (img.GetBPP() == 32) //Obrazek 32bit
+		{
+			glTexImage2D(GL_TEXTURE_2D, 0, 4, img.GetWidth(), img.GetHeight(), 0,
+				GL_RGBA, GL_UNSIGNED_BYTE, img.GetImg());
+		}
+	}
+	else return 5;
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	if (img.Load("tex_missile.tga") == IMG_OK) {
+		glGenTextures(1, &tmissile); //Zainicjuj uchwyt tex
+		glBindTexture(GL_TEXTURE_2D, tmissile); //Przetwarzaj uchwyt tex
+		if (img.GetBPP() == 24) //Obrazek 24bit
+		{
+			glTexImage2D(GL_TEXTURE_2D, 0, 3, img.GetWidth(), img.GetHeight(), 0,
+				GL_RGB, GL_UNSIGNED_BYTE, img.GetImg());
+		}
+		else if (img.GetBPP() == 32) //Obrazek 32bit
+		{
+			glTexImage2D(GL_TEXTURE_2D, 0, 4, img.GetWidth(), img.GetHeight(), 0,
+				GL_RGBA, GL_UNSIGNED_BYTE, img.GetImg());
+		}
+	}
+	else return 5;
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glEnable(GL_TEXTURE_2D);
+
+
+	for (int i = 0; i < robots.size(); i++)
+	{
+		robots[i].body.tex_handle = body;
+		robots[i].ball.tex_handle = body;
+		robots[i].left_arm.tex_handle = body;
+		robots[i].right_arm.tex_handle = body;
+		robots[i].eyes.tex_handle = eyes;
+	}
+	missile.tex_handle = tmissile;
+	return true;
+}
+
 int main (int argc, char** argv) {
 
 	initializeGLUT(&argc, argv);
@@ -135,6 +209,8 @@ int main (int argc, char** argv) {
 
 	robots.push_back(Robot());
 	robots.push_back(Robot());
+	missile.loadObj("tex_missile.obj");
+	initTextures();
 
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);

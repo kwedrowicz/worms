@@ -3,7 +3,7 @@
 class Robot
 {
 public:
-	Model body, left_arm, right_arm;
+	Model body, left_arm, right_arm, ball, eyes;
 	bool isTurnRight = false;
 	bool onGround = true;
 	int  direction = 1;

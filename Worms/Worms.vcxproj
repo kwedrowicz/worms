@@ -83,10 +83,12 @@
     <ClCompile Include="main_file.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Robot.cpp" />
+    <ClCompile Include="tga.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Model.h" />
     <ClInclude Include="Robot.h" />
+    <ClInclude Include="tga.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
