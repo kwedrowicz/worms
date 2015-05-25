@@ -37,7 +37,6 @@ void displayFrame(void) {
 	glMatrixMode(GL_MODELVIEW);
 	for (int i = 0; i < robots.size(); i++)
 	{
-		//glLoadMatrixf(value_ptr(V*robots[i].body.M));
 		robots[i].Draw(V);
 	}
 	glutSwapBuffers();
@@ -47,7 +46,6 @@ void nextFrame(void) {
 	int actTime = glutGet(GLUT_ELAPSED_TIME);
 	int interval = actTime - lastTime;
 	lastTime = actTime;
-	//robots[active].body.M = translate(robots[active].body.M, vec3(speed*interval*robots[active].direction / 1000.0f, 0.0f, 0.0f));
 	robots[active].translateWhole(vec3(speed*interval*robots[active].direction / 1000.0f, 0.0f, 0.0f));
 	for (int i = 0; i < robots.size(); i++)
 	{
@@ -76,6 +74,15 @@ void initializeGLEW() {
 		exit(1);
 	}
 	fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
+}
+
+void keyDown2(unsigned char c, int x, int y)
+{
+	if (c == ' ')
+	{
+		mat4 last = robots[active].right_arm.M;
+		robots[active].right_arm.M = rotate(robots[active].right_arm.M, radians(10.0f), vec3(0.0f, 0.0f, 1.0f));
+	}
 }
 
 void keyDown(int c, int x, int y)
@@ -121,6 +128,7 @@ int main (int argc, char** argv) {
 	initializeGLEW();
 	//Kod inicjuj¹cy tutaj
 	glutIdleFunc(nextFrame);
+	glutKeyboardFunc(keyDown2);
 	glutSpecialFunc(keyDown);
 	glutSpecialUpFunc(keyUp);
 	srand(time(NULL));
