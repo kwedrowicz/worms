@@ -16,9 +16,12 @@ Robot::Robot()
 	eyes.shininess = 1.0f;
 	for (int i = 0; i < 3; i++)
 	{
-		eyes.ambient[i] = 1;
-		eyes.specular[i] = 1;
-		eyes.diffuse[i] = 1;
+		if (i != 1)
+		{
+			eyes.ambient[i] = 0.5;
+			eyes.specular[i] = 1;
+			eyes.diffuse[i] = 1;
+		}
 	}
 	/*left_arm = right_arm;
 	left_arm.M = rotate(left_arm.M, radians(180.0f), vec3(0.0f, 1.0f, 0.0f));*/

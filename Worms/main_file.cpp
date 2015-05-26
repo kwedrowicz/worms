@@ -31,7 +31,7 @@ void displayFrame(void) {
 	glClearColor(0, 0, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	float lpos[4] = { 1, 0, 0, 1 };
+	float lpos[4] = { 1, 0, 0, 0 };
     glLightfv(GL_LIGHT0, GL_POSITION, lpos);
 	mat4 P = perspective(1.5f, 1.0f, 1.0f, 50.0f);
 	mat4 V = lookAt(vec3(0.0f, 0.0f, -5.0f), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
