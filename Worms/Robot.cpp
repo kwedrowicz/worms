@@ -43,7 +43,6 @@ void Robot::turnFaceSide()
 
 void Robot::jump()
 {
-	cout << "HUrra" << endl;
 	onGround = false;
 	verticalSpeed = 8.0f;
 }
