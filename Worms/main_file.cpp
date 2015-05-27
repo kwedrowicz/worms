@@ -23,8 +23,7 @@ int lastTime = 0;
 float scaleModifier = 0.3f;
 Robot robot;
 Robot robot2;
-Model missile;
-Wall wall(100, 15, 7);
+Wall wall(2, 15, 7);
 
 vector<Robot> robots;
 int active = 0;
@@ -47,7 +46,7 @@ void displayFrame(void) {
 		robots[i].Draw(V);
 		wall.Draw(V);
 	}
-	missile.Draw(V);
+	//missile.Draw(V,robots[0].M);
 	glutSwapBuffers();
 }
 
@@ -55,7 +54,7 @@ void nextFrame(void) {
 	int actTime = glutGet(GLUT_ELAPSED_TIME);
 	int interval = actTime - lastTime;
 	lastTime = actTime;
-	robots[active].translateWhole(vec3(speed*interval*robots[active].direction / 1000.0f, 0.0f, 0.0f));
+	robots[active].M = translate(robots[active].M, vec3(speed*interval*robots[active].direction / 1000.0f, 0.0f, 0.0f));
 	for (int i = 0; i < robots.size(); i++)
 	{
 		if (!robots[i].onGround)
@@ -89,8 +88,8 @@ void keyDown2(unsigned char c, int x, int y)
 {
 	if (c == ' ')
 	{
-		robots[active].right_arm.M = translate(robots[active].right_arm.M, vec3(0.04041f - 0.3f, 0.94638f + 2.0f, -2.81069f));
-		//robots[active].right_arm.M = rotate(robots[active].right_arm.M, radians(10.0f), vec3(0.0f, 0.0f, 1.0f));
+		//robots[active].right_arm.M = translate(robots[active].right_arm.M, vec3(0.04041f - 0.3f, 0.94638f + 2.0f, -2.81069f));
+		robots[active].right_arm.M = rotate(robots[active].right_arm.M, radians(10.0f), vec3(0.0f, 0.0f, 1.0f));
 		//robots[active].right_arm.M = translate(robots[active].right_arm.M, vec3(-0.04041f + 0.3f, -0.94638f - 2.0f, 2.81069f));
 
 	}
@@ -199,8 +198,8 @@ bool initTextures()
 		robots[i].left_arm.tex_handle = body;
 		robots[i].right_arm.tex_handle = body;
 		robots[i].eyes.tex_handle = eyes;
+		robots[i].missile.tex_handle = tmissile;
 	}
-	missile.tex_handle = tmissile;
 	return true;
 }
 
@@ -220,7 +219,6 @@ int main (int argc, char** argv) {
 
 	robots.push_back(Robot());
 	robots.push_back(Robot());
-	missile.loadObj("tex_missile.obj");
 	initTextures();
 
 	glEnable(GL_NORMALIZE);

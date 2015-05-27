@@ -27,7 +27,7 @@ void Model::SetTexture(GLuint in_handle)
 	tex_handle = in_handle;
 }
 
-void Model::Draw(glm::mat4 &view)
+void Model::Draw(glm::mat4 &view, glm::mat4 &model)
 {
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_INDEX_ARRAY);
@@ -39,7 +39,7 @@ void Model::Draw(glm::mat4 &view)
 	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
 
-	glLoadMatrixf(value_ptr(view*M));
+	glLoadMatrixf(value_ptr(view*model*M));
 	glBindTexture(GL_TEXTURE_2D, tex_handle);
 	glVertexPointer(3, GL_FLOAT, 0, &vertices[0]);
 	glTexCoordPointer(2, GL_FLOAT, 0, &textures[0]);
