@@ -13,10 +13,17 @@
 #include "Robot.h"
 #include "tga.h"
 #include "Wall.h"
+#include <math.h>
 
 using namespace std;
 using namespace glm;
 
+namespace settings{
+	const int y_res = 600;
+	const int x_res = 800;
+	const int x_win_pos = 0;
+	const int y_win_pos = 0;
+}
 
 float speed = 0; //60 stopni/s
 int lastTime = 0;
@@ -68,8 +75,8 @@ void nextFrame(void) {
 void initializeGLUT(int* pargc, char** argv) {
 	glutInit(pargc, argv);
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
-	glutInitWindowPosition(0, 0);
-	glutInitWindowSize(800, 600);
+	glutInitWindowPosition(settings::x_win_pos, settings::y_win_pos);
+	glutInitWindowSize(settings::x_res, settings::y_res);
 	glutCreateWindow("Program OpenGL");
 	glutDisplayFunc(displayFrame);
 }
@@ -122,7 +129,18 @@ void keyDown(int c, int x, int y)
 	}
 }
 
+void mousePassive(int x, int y)
+{
+	float angle = atan2(settings::y_res/2-y, settings::x_res/2-x);
+	angle += radians(90.0f);
+	if (robots[active].isTurnRight) angle = -angle;
+	//angle = angle * 180 / M_PI;
+	robots[active].right_arm.M = mat4(1.0);
+	robots[active].right_arm.M = translate(robots[active].right_arm.M, vec3(0, 0.94638f + 1.9f, 0));
+	robots[active].right_arm.M = rotate(robots[active].right_arm.M, angle, vec3(0.0f, 0.0f, 1.0f));
+	robots[active].right_arm.M = translate(robots[active].right_arm.M, vec3(0, -0.94638f - 1.9f, 0));
 
+}
 
 void keyUp(int c, int x, int y)
 {
@@ -213,6 +231,7 @@ int main (int argc, char** argv) {
 	//Kod inicjuj¹cy tutaj
 	glutIdleFunc(nextFrame);
 	glutKeyboardFunc(keyDown2);
+	glutPassiveMotionFunc(mousePassive);
 	glutSpecialFunc(keyDown);
 	glutSpecialUpFunc(keyUp);
 	srand(time(NULL));
