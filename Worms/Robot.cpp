@@ -87,10 +87,10 @@ void Robot::Draw(mat4 &view)
 	glDisableClientState(GL_NORMAL_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);*/
 	body.Draw(view, M);
-	left_arm.Draw(view,M);
-	right_arm.Draw(view,M);
+	left_arm.Draw(view,M*body.M);
+	right_arm.Draw(view,M*body.M);
 	ball.Draw(view,M);
 	eyes.Draw(view,M);
-	missile.Draw(view, M);
+	missile.Draw(view,M*right_arm.M);
 }
 
