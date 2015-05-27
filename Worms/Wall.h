@@ -16,6 +16,8 @@ public:
 	void BlowCylinder(float x, float y, float radius);
 	Wall(int sizex, int sizey, int sizez);
 	~Wall();
+	float ambient[4], diffuse[4], specular[4];
+	GLfloat shininess;
 	std::vector<std::vector<std::vector<Cube> > > cubes;
 	std::vector<Material> materials;
 	int cubeVertexCount;
