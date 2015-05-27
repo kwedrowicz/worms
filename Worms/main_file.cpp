@@ -205,8 +205,8 @@ bool initTextures()
 
 int main (int argc, char** argv) {
 	wall.BlowCylinder(-30, 15, 20);
-	wall.M = scale(wall.M, vec3(0.07, 0.07, 0.07));
-	wall.M = translate(wall.M, vec3(0, -20, 0));
+	wall.M = scale(wall.M, vec3(0.2, 0.2, 0.2));
+	wall.M = translate(wall.M, vec3(0, -20, 50));
 
 	initializeGLUT(&argc, argv);
 	initializeGLEW();

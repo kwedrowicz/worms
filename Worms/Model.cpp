@@ -46,6 +46,7 @@ void Model::Draw(glm::mat4 &view)
 	glNormalPointer(GL_FLOAT, 0, &normals[0]);
 	glDrawArrays(GL_TRIANGLES, 0, vertex_count);
 
+
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_INDEX_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);
