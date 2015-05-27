@@ -23,7 +23,7 @@ int lastTime = 0;
 float scaleModifier = 0.3f;
 Robot robot;
 Robot robot2;
-Wall wall(2, 15, 7);
+Wall wall(80, 15, 4);
 
 vector<Robot> robots;
 int active = 0;
@@ -54,7 +54,8 @@ void nextFrame(void) {
 	int actTime = glutGet(GLUT_ELAPSED_TIME);
 	int interval = actTime - lastTime;
 	lastTime = actTime;
-	robots[active].M = translate(robots[active].M, vec3(speed*interval*robots[active].direction / 1000.0f, 0.0f, 0.0f));
+	robots[active].M = translate(robots[active].M, vec3(speed*interval*robots[active].direction / 2000.0f, 0.0f, 0.0f));
+	robots[active].ball.M = rotate(robots[active].ball.M,-1*robots[active].direction * speed/60, vec3(0.0, 0.0, 1.0));
 	for (int i = 0; i < robots.size(); i++)
 	{
 		if (!robots[i].onGround)
@@ -88,9 +89,9 @@ void keyDown2(unsigned char c, int x, int y)
 {
 	if (c == ' ')
 	{
-		robots[active].right_arm.M = translate(robots[active].right_arm.M, vec3(0, 0.94638f + 1.9f,0));
+		robots[active].right_arm.M = translate(robots[active].right_arm.M, vec3(0, 0.94638f + 1.89f,0));
 		robots[active].right_arm.M = rotate(robots[active].right_arm.M, radians(10.0f), vec3(0.0f, 0.0f, 1.0f));
-		robots[active].right_arm.M = translate(robots[active].right_arm.M, vec3(0, -0.94638f - 1.9f,0));
+		robots[active].right_arm.M = translate(robots[active].right_arm.M, vec3(0, -0.94638f - 1.89f,0));
 
 	}
 }
@@ -103,18 +104,18 @@ void keyDown(int c, int x, int y)
 			robots[active].turnFaceSide();
 		speed = 6;
 	}
-	else if (c == GLUT_KEY_RIGHT)
+	if (c == GLUT_KEY_RIGHT)
 	{
 		if (!robots[active].isTurnRight)
 			robots[active].turnFaceSide();
 		speed = -6;
 	}
-	else if (c == GLUT_KEY_UP)
+	if (c == GLUT_KEY_UP)
 	{
 		if (robots[active].onGround)
 			robots[active].jump();
 	}
-	else if (c == GLUT_KEY_F1)
+	if (c == GLUT_KEY_F1)
 	{
 		active++;
 		if (active >= robots.size())
