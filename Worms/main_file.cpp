@@ -12,6 +12,7 @@
 #include <time.h>
 #include "Robot.h"
 #include "tga.h"
+#include "Wall.h"
 
 using namespace std;
 using namespace glm;
@@ -23,6 +24,7 @@ float scaleModifier = 0.3f;
 Robot robot;
 Robot robot2;
 Model missile;
+Wall wall(100, 15, 7);
 
 vector<Robot> robots;
 int active = 0;
@@ -39,9 +41,11 @@ void displayFrame(void) {
 	glMatrixMode(GL_PROJECTION);
 	glLoadMatrixf(value_ptr(P));
 	glMatrixMode(GL_MODELVIEW);
+	
 	for (int i = 0; i < robots.size(); i++)
 	{
 		robots[i].Draw(V);
+		wall.Draw(V);
 	}
 	missile.Draw(V);
 	glutSwapBuffers();
@@ -200,6 +204,9 @@ bool initTextures()
 }
 
 int main (int argc, char** argv) {
+	wall.BlowCylinder(-30, 15, 20);
+	wall.M = scale(wall.M, vec3(0.07, 0.07, 0.07));
+	wall.M = translate(wall.M, vec3(0, -20, 0));
 
 	initializeGLUT(&argc, argv);
 	initializeGLEW();
