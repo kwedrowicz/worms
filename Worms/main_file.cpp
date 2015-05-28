@@ -98,8 +98,13 @@ void keyDown2(unsigned char c, int x, int y)
 	{
 		robots[active].right_arm.M = translate(robots[active].right_arm.M, vec3(0, 0.94638f + 1.89f,0));
 		robots[active].right_arm.M = rotate(robots[active].right_arm.M, radians(10.0f), vec3(0.0f, 0.0f, 1.0f));
+		robots[active].arm_angle += 10.0f;
 		robots[active].right_arm.M = translate(robots[active].right_arm.M, vec3(0, -0.94638f - 1.89f,0));
 
+	}
+	else if (c == 'q')
+	{
+		robots[active].Shot();
 	}
 }
 
@@ -137,8 +142,10 @@ void mousePassive(int x, int y)
 	if (robots[active].isTurnRight) angle = -angle;
 	//angle = angle * 180 / M_PI;
 	robots[active].right_arm.M = mat4(1.0);
+	robots[active].arm_angle = 0.0f;
 	robots[active].right_arm.M = translate(robots[active].right_arm.M, vec3(0, 0.94638f + 1.9f, 0));
 	robots[active].right_arm.M = rotate(robots[active].right_arm.M, angle, vec3(0.0f, 0.0f, 1.0f));
+	robots[active].arm_angle += angle;
 	robots[active].right_arm.M = translate(robots[active].right_arm.M, vec3(0, -0.94638f - 1.9f, 0));
 
 }

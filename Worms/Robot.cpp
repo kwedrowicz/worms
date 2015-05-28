@@ -2,6 +2,9 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include <iostream>
+#include <cstdio>
+#include <cmath>
+#define M_PI 3.14159265358979323846
 
 using namespace glm;
 using namespace std;
@@ -92,5 +95,17 @@ void Robot::Draw(mat4 &view)
 	ball.Draw(view,M);
 	eyes.Draw(view,M);
 	missile.Draw(view,M*right_arm.M);
+	cout << "K¹t: " << arm_angle * 180 / M_PI << endl;
+}
+
+void Robot::Shot()
+{
+
+	missile.M = translate(missile.M, vec3(0.0f, -1.0f, 0.0f));
+}
+
+void Robot::calculateShot(int time)
+{
+
 }
 
