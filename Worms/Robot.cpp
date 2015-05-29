@@ -96,7 +96,7 @@ void Robot::Draw(mat4 &view)
 	eyes.Draw(view,M);
 	if (isShooting)
 	{
-		missile.Draw(view, M);
+		missile.Draw(view,M);
 	}
 	else
 	{
@@ -129,14 +129,17 @@ void Robot::calculateShot(int time)
 	arm_angle = new_arm_angle;
 	//missile.M = mat4(1.0);
 
-	missile.M = translate(missile.M, vec3(horizontalSpeed*time / 1000.0f, verticalSpeed*time / 1000.0f, 0.0f));
 	//missile.M = translate(missile.M, vec3(0.0f, 0.1f, 0.0f));
 
-	/*missile.M = translate(missile.M, vec3(0, missile_translate, 0));
-	missile.M = rotate(missile.M, arm_angle, vec3(0.0f, 0.0f, 1.0f));
-	missile.M = translate(missile.M, vec3(0, -1*missile_translate, 0));
+	missile.M = translate(missile.M, vec3(horizontalSpeed*time / 1000.0f, verticalSpeed*time / 1000.0f, 0.0f));
 
-	missile_translate += (missile_speed*time / 1000.0f);*/
+	/*missile.M = translate(missile.M, vec3(missile_translate_x, missile_translate_y, 0));
+	missile.M = rotate(missile.M, arm_angle, vec3(0.0f, 0.0f, 1.0f));
+	missile.M = translate(missile.M, vec3(-1*missile_translate_x, -1*missile_translate_y, 0));
+
+
+	missile_translate_x += (horizontalSpeed*time / 1000.0f);
+	missile_translate_y += (verticalSpeed*time / 1000.0f);*/
 
 
 }
