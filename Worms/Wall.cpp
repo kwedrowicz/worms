@@ -15,6 +15,7 @@ Wall::Wall(int sizex, int sizey, int sizez){
 	currVIndex = -1;
 	indicesNumber = 0;
 
+
 	for (int i = 0; i < 3; i++)
 	{
 		ambient[i] = 0.2;
@@ -25,8 +26,8 @@ Wall::Wall(int sizex, int sizey, int sizez){
 	shininess = 0;
 
 	M = mat4(1);
-	materials.push_back(Material(1.2, 0.6, 0));
-	materials.push_back(Material(0, 1.6, 0));
+	materials.push_back(Material(1, 0.5, 0));
+	materials.push_back(Material(0, 1, 0));
 	xnum = sizex;
 	ynum = sizey;
 	znum = sizez;
@@ -131,6 +132,7 @@ int Wall::FetchMeshVertexIndex(int cubex, int cubey, int cubez, int vx, int vy, 
 	if (vx <= 0){
 		if (cubex - 1 >= 0){
 			if (cubes[cubex - 1][cubey][cubez].vindex[vz * 2 + (vy * 4) + 1] > -1){
+				cubes[cubex][cubey][cubez].vindex[vx + 2 * vz + 4 * vy] = cubes[cubex - 1][cubey][cubez].vindex[vz * 2 + (vy * 4) + 1];
 				return cubes[cubex - 1][cubey][cubez].vindex[vz * 2 + (vy * 4) + 1];
 			}
 		}
@@ -143,6 +145,7 @@ int Wall::FetchMeshVertexIndex(int cubex, int cubey, int cubez, int vx, int vy, 
 	if (vy<=0){
 		if (cubey - 1 >= 0){
 			if (cubes[cubex][cubey - 1][cubez].vindex[vx + (vz * 2) + 4] > -1){
+				cubes[cubex][cubey][cubez].vindex[vx + 2 * vz + 4 * vy] = cubes[cubex][cubey - 1][cubez].vindex[vx + (vz * 2) + 4];
 				return cubes[cubex][cubey - 1][cubez].vindex[vx + (vz * 2) + 4];
 			}
 		}
@@ -151,11 +154,11 @@ int Wall::FetchMeshVertexIndex(int cubex, int cubey, int cubez, int vx, int vy, 
 	if (vz<=0){
 		if (cubez - 1 >= 0){
 			if (cubes[cubex][cubey][cubez - 1].vindex[vx + 2 + (vy * 4)] > -1){
+				cubes[cubex][cubey][cubez].vindex[vx + 2 * vz + 4 * vy] = cubes[cubex][cubey][cubez - 1].vindex[vx + 2 + (4 * vy)];
 				return cubes[cubex][cubey][cubez-1].vindex[vx + 2 + (4*vy)];
 			}
 		}
 	}
-
 	currVIndex++;
 	cubes[cubex][cubey][cubez].vindex[vx + 2 * vz + 4 * vy] = currVIndex;
 	return -1 * (currVIndex + 1);
@@ -249,6 +252,11 @@ void Wall::MeshPushSide(int cubex, int cubey, int cubez, int side){
 	meshIndices.push_back(V[2]);
 	meshIndices.push_back(V[3]);
 	indicesNumber += 6;
+	/*if (cubex > 0 && cubex<xnum - 1 && cubez == 0 && cubey>0 && cubey < ynum - 1){
+		for (int i = 0; i < 4; i++){
+			std::cout << meshNormals[V[i] * 3] << ", " << meshNormals[V[i] * 3 + 1] << ", " << meshNormals[V[i] * 3 + 2] << ", " << endl;
+		}
+	}*/
 }
 
 
@@ -283,6 +291,10 @@ void Wall::CreateMesh(int xdir, int ydir, int zdir){
 			}
 		}
 	}
+	for (int i = 0; i < meshColors.size(); i++){
+		meshColors[i] /= 4;
+	}
+	//cout << indicesNumber << endl;
 }
 
 
