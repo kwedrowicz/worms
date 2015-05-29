@@ -8,7 +8,7 @@ using namespace std;
 
 Cube::Cube()
 {
-	M = mat4(1);
+	//M = mat4(1);
 	broken = 0;
 	visible = 0;
 	material = 0;

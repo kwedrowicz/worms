@@ -47,8 +47,8 @@ Wall::Wall(int sizex, int sizey, int sizez){
 	for (int i = 0; i < sizex; i++){
 		for (int j = 0; j < sizey; j++){
 			for (int k = 0; k < sizez; k++){
-				cubes[i][j][k].M = translate(cubes[i][j][k].M, vec3(startx, starty, startz));
-				cubes[i][j][k].M = translate(cubes[i][j][k].M, vec3(i, j, k));
+				//cubes[i][j][k].M = translate(cubes[i][j][k].M, vec3(startx, starty, startz));
+				//cubes[i][j][k].M = translate(cubes[i][j][k].M, vec3(i, j, k));
 				if (i == 0 || i == sizex - 1 || j == 0 || j == sizey - 1 || k == 0 || k == sizez - 1){
 					cubes[i][j][k].visible=1;
 					cubes[i][j][k].material = 1;
@@ -66,6 +66,8 @@ Wall::~Wall()
 	
 }
 
+
+/*
 void Wall::Draw(mat4 &V)
 {
 	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
@@ -89,6 +91,7 @@ void Wall::Draw(mat4 &V)
 	}
 	M = temp;
 }
+*/
 
 void Wall::BlowCylinder(float x, float y, float r)
 {

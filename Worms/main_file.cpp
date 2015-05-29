@@ -33,7 +33,7 @@ int lastTime = 0;
 float scaleModifier = 0.3f;
 Robot robot;
 Robot robot2;
-Wall wall(500, 60, 20);
+Wall wall(200, 70, 30);
 
 vector<Robot> robots;
 int active = 0;
