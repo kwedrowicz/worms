@@ -14,7 +14,7 @@ public:
 	bool visible;
 	bool broken;
 	int material;
-	mat4 M;
+	//mat4 M;
 	int vindex[8];
 	Cube();
 	~Cube();

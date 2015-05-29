@@ -16,5 +16,6 @@ public:
 	glm::mat4 M = glm::mat4(1.0);
 	Material(float r, float g, float b);
 	~Material();
+	float r, g, b;
 };
 
