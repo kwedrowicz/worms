@@ -96,7 +96,7 @@ void Robot::Draw(mat4 &view)
 	eyes.Draw(view,M);
 	if (isShooting)
 	{
-		missile.Draw(view,M);
+		missile.Draw(view, M);
 	}
 	else
 	{
@@ -106,33 +106,86 @@ void Robot::Draw(mat4 &view)
 
 void Robot::Shot()
 {
-	missile.M = mat4(1.0);
+//	missile.M = mat4(1.0);
 	missile_speed = 15.0f;
+
+	vec4 startPoint = vec4(missile_translate_x, missile_translate_y, 0.0f, 1.0f);
+	mat4 M2 = mat4(1.0f);
+	M2 = translate(M2, vec3(0, 0.94638f + 1.9f, 0));
+	M2 = rotate(M2, arm_angle, vec3(0, 0, 1));
+	M2 = translate(M2, vec3(0, -(0.94638f + 1.9f), 0));
+	startPoint = M2 * startPoint;
+	
+	missileX += startPoint.x; missileY += startPoint.y-0.2f; 
+	//system("pause");
+
 	arm_angle -= (M_PI / 2);
+	
+	if (!isTurnRight && arm_angle <= (M_PI / 2) && arm_angle >= -(M_PI / 2))
+		shootingRight = false;
+	else if (!isTurnRight && (arm_angle > M_PI / 2 || arm_angle < -(M_PI / 2))) 
+		shootingRight = true;
+	else if (isTurnRight && (arm_angle + M_PI) <= (M_PI / 2) && (arm_angle + M_PI) >= -(M_PI / 2))
+		shootingRight = false;
+	else if (isTurnRight && ((arm_angle + M_PI) > M_PI / 2 || (arm_angle + M_PI) < -(M_PI / 2)))  
+		shootingRight = true;
+
 	isShooting = true;
 }
 
 void Robot::calculateShot(int time)
 {
-	cout << "Kat: " << arm_angle * 180 / M_PI << endl;
-	//system("pause");
-	horizontalSpeed = cos(arm_angle)*missile_speed;
-	cout << "Hor: " << horizontalSpeed << endl;
-	verticalSpeed = sin(arm_angle)*missile_speed;
-	cout << "Ver: " << verticalSpeed << endl;
+	if (missileFlyTime < 2000)
+	{
+		//cout << "Kat: " << arm_angle * 180 / M_PI << endl;
+		//system("pause");
+		horizontalSpeed = cos(arm_angle)*missile_speed;
+		//cout << "Hor: " << horizontalSpeed << endl;
+		verticalSpeed = sin(arm_angle)*missile_speed;
+		//cout << "Ver: " << verticalSpeed << endl;
 
-	verticalSpeed += gravity * time / 1000.0f;
-	cout << "Ver: " << verticalSpeed << endl;
-	float new_arm_angle = atan(verticalSpeed / horizontalSpeed);
-	missile_speed = horizontalSpeed / cos(new_arm_angle);
-	//missile.M = rotate(missile.M, new_arm_angle - arm_angle, vec3(0.0f, 0.0f, 1.0f));
-	arm_angle = new_arm_angle;
-	//missile.M = mat4(1.0);
+		verticalSpeed += gravity * time / 1000.0f;
+		//cout << "Ver: " << verticalSpeed << endl;
+		float new_arm_angle = atan(verticalSpeed / horizontalSpeed);
+		missile_speed = horizontalSpeed / cos(new_arm_angle);
+		arm_angle = new_arm_angle;
+		//missile.M = translate(missile.M, vec3(horizontalSpeed*time / 1000.0f, verticalSpeed*time / 1000.0f, 0.0f));
+		missileX += horizontalSpeed*time / 1000.0f; 
+		missileY += verticalSpeed*time / 1000.0f;
+		//if (new_arm_angle)
+		/*if (isTurnRight && new_arm_angle <= (M_PI / 2) && new_arm_angle >= -(M_PI / 2))
+			new_arm_angle += M_PI / 2;
+		else if (isTurnRight && (new_arm_angle > M_PI/2 || new_arm_angle < -(M_PI/2)))    //za siebie leci tylem
+			new_arm_angle -= M_PI / 2;
+		else if (!isTurnRight && new_arm_angle <= M_PI / 2 && new_arm_angle > -(M_PI / 2))
+			new_arm_angle -= M_PI / 2;
+		else if (!isTurnRight && (new_arm_angle > M_PI / 2 || new_arm_angle< -(M_PI/2)))  // przed siebie leci tylem
+			new_arm_angle += M_PI / 2;  */
+		if (isTurnRight && shootingRight)
+			new_arm_angle += M_PI / 2;
+		else if (isTurnRight && !shootingRight)
+			new_arm_angle -= M_PI / 2;
+		else if (!isTurnRight && shootingRight)
+			new_arm_angle -= M_PI / 2;
+		else if (!isTurnRight && !shootingRight)
+			new_arm_angle += M_PI / 2;
+		missile.M = mat4(1.0f);		
+		missile.M = translate(missile.M, vec3(missileX, missileY, 0));
+		missile.M = rotate(missile.M, new_arm_angle, vec3(0, 0, 1));
+		missile.M = translate(missile.M, vec3(0, -0.77206f, 0));
+		//missile.M = translate(missile.M, vec3(-missileX, -missileY, 0));
+		
+		//missile.M = translate(missile.M, vec3(startPoint.x, startPoint.y - 0.2f, 0));
 
-	//missile.M = translate(missile.M, vec3(0.0f, 0.1f, 0.0f));
-
-	missile.M = translate(missile.M, vec3(horizontalSpeed*time / 1000.0f, verticalSpeed*time / 1000.0f, 0.0f));
-
+		missileFlyTime += time;
+	}
+	else
+	{
+		missileFlyTime = 0;
+		missile.M = mat4(1.0);
+		missileX = 0; missileY = 0.77206f;
+		isShooting = false;		
+	}
 	/*missile.M = translate(missile.M, vec3(missile_translate_x, missile_translate_y, 0));
 	missile.M = rotate(missile.M, arm_angle, vec3(0.0f, 0.0f, 1.0f));
 	missile.M = translate(missile.M, vec3(-1*missile_translate_x, -1*missile_translate_y, 0));

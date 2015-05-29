@@ -22,8 +22,8 @@ using namespace std;
 using namespace glm;
 
 namespace settings{
-	const int y_res = 600;
-	const int x_res = 800;
+	const int y_res = 900;
+	const int x_res = 1440;
 	const int x_win_pos = 0;
 	const int y_win_pos = 0;
 }
@@ -33,7 +33,13 @@ int lastTime = 0;
 float scaleModifier = 0.3f;
 Robot robot;
 Robot robot2;
+<<<<<<< HEAD
+//Wall wall(200, 70, 30);
+Wall wall(1,1, 1);
+
+=======
 Wall wall(200, 50, 30);
+>>>>>>> origin/master
 
 vector<Robot> robots;
 int active = 0;
