@@ -33,7 +33,7 @@ int lastTime = 0;
 float scaleModifier = 0.3f;
 Robot robot;
 Robot robot2;
-Wall wall(1,1,1);
+Wall wall(500, 60, 20);
 
 vector<Robot> robots;
 int active = 0;
@@ -54,7 +54,7 @@ void displayFrame(void) {
 	for (int i = 0; i < robots.size(); i++)
 	{
 		robots[i].Draw(V);
-		wall.Draw(V);
+		wall.DrawMesh(V);
 	}
 	//missile.Draw(V,robots[0].M);
 	glutSwapBuffers();
@@ -151,14 +151,14 @@ void mousePassive(int x, int y)
 	if (!robots[active].isShooting)
 	{
 		float angle = atan2(settings::y_res / 2 - y, settings::x_res / 2 - x);
-		angle += radians(90.0f);
-		if (robots[active].isTurnRight) angle = -angle;
-		//angle = angle * 180 / M_PI;
-		robots[active].right_arm.M = mat4(1.0);
-		robots[active].right_arm.M = translate(robots[active].right_arm.M, vec3(0, 0.94638f + 1.9f, 0));
-		robots[active].right_arm.M = rotate(robots[active].right_arm.M, angle, vec3(0.0f, 0.0f, 1.0f));
+	angle += radians(90.0f);
+	if (robots[active].isTurnRight) angle = -angle;
+	//angle = angle * 180 / M_PI;
+	robots[active].right_arm.M = mat4(1.0);
+	robots[active].right_arm.M = translate(robots[active].right_arm.M, vec3(0, 0.94638f + 1.9f, 0));
+	robots[active].right_arm.M = rotate(robots[active].right_arm.M, angle, vec3(0.0f, 0.0f, 1.0f));
 		robots[active].arm_angle = angle;
-		robots[active].right_arm.M = translate(robots[active].right_arm.M, vec3(0, -0.94638f - 1.9f, 0));
+	robots[active].right_arm.M = translate(robots[active].right_arm.M, vec3(0, -0.94638f - 1.9f, 0));
 	}
 }
 
@@ -245,6 +245,7 @@ int main (int argc, char** argv) {
 	wall.BlowCylinder(-30, 15, 20);
 	wall.M = scale(wall.M, vec3(0.2, 0.2, 0.2));
 	wall.M = translate(wall.M, vec3(0, -20, 50));
+	wall.CreateMesh(0,0,0);
 
 	initializeGLUT(&argc, argv);
 	initializeGLEW();
