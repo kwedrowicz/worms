@@ -6,9 +6,11 @@ using namespace std;
 
 
 
-Material::Material(float r, float g, float b)
+Material::Material(float red, float gre, float blu)
 {
-
+	r = red;
+	g = gre;
+	b = blu;
 
 	float cubeNormals1[] = {
 	    -0.5, 0.5, 0.5,  //trzeci?

@@ -30,7 +30,7 @@ int lastTime = 0;
 float scaleModifier = 0.3f;
 Robot robot;
 Robot robot2;
-Wall wall(80, 15, 4);
+Wall wall(500, 60, 20);
 
 vector<Robot> robots;
 int active = 0;
@@ -51,7 +51,7 @@ void displayFrame(void) {
 	for (int i = 0; i < robots.size(); i++)
 	{
 		robots[i].Draw(V);
-		wall.Draw(V);
+		wall.DrawMesh(V);
 	}
 	//missile.Draw(V,robots[0].M);
 	glutSwapBuffers();
@@ -233,6 +233,7 @@ int main (int argc, char** argv) {
 	wall.BlowCylinder(-30, 15, 20);
 	wall.M = scale(wall.M, vec3(0.2, 0.2, 0.2));
 	wall.M = translate(wall.M, vec3(0, -20, 50));
+	wall.CreateMesh(0,0,0);
 
 	initializeGLUT(&argc, argv);
 	initializeGLEW();
