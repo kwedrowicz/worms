@@ -94,18 +94,50 @@ void Robot::Draw(mat4 &view)
 	right_arm.Draw(view,M*body.M);
 	ball.Draw(view,M);
 	eyes.Draw(view,M);
-	missile.Draw(view,M*right_arm.M);
-	cout << "K¹t: " << arm_angle * 180 / M_PI << endl;
+	if (isShooting)
+	{
+		missile.Draw(view, M);
+	}
+	else
+	{
+		missile.Draw(view, M*right_arm.M);
+	}
 }
 
 void Robot::Shot()
 {
-
-	missile.M = translate(missile.M, vec3(0.0f, -1.0f, 0.0f));
+	missile.M = mat4(1.0);
+	missile_speed = 15.0f;
+	arm_angle -= (M_PI / 2);
+	isShooting = true;
 }
 
 void Robot::calculateShot(int time)
 {
+	cout << "Kat: " << arm_angle * 180 / M_PI << endl;
+	//system("pause");
+	horizontalSpeed = cos(arm_angle)*missile_speed;
+	cout << "Hor: " << horizontalSpeed << endl;
+	verticalSpeed = sin(arm_angle)*missile_speed;
+	cout << "Ver: " << verticalSpeed << endl;
+
+	verticalSpeed += gravity * time / 1000.0f;
+	cout << "Ver: " << verticalSpeed << endl;
+	float new_arm_angle = atan(verticalSpeed / horizontalSpeed);
+	missile_speed = horizontalSpeed / cos(new_arm_angle);
+	//missile.M = rotate(missile.M, new_arm_angle - arm_angle, vec3(0.0f, 0.0f, 1.0f));
+	arm_angle = new_arm_angle;
+	//missile.M = mat4(1.0);
+
+	missile.M = translate(missile.M, vec3(horizontalSpeed*time / 1000.0f, verticalSpeed*time / 1000.0f, 0.0f));
+	//missile.M = translate(missile.M, vec3(0.0f, 0.1f, 0.0f));
+
+	/*missile.M = translate(missile.M, vec3(0, missile_translate, 0));
+	missile.M = rotate(missile.M, arm_angle, vec3(0.0f, 0.0f, 1.0f));
+	missile.M = translate(missile.M, vec3(0, -1*missile_translate, 0));
+
+	missile_translate += (missile_speed*time / 1000.0f);*/
+
 
 }
 

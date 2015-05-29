@@ -15,6 +15,9 @@
 #include "Wall.h"
 #include <math.h>
 
+#define M_PI 3.14159265358979323846
+
+
 using namespace std;
 using namespace glm;
 
@@ -30,7 +33,7 @@ int lastTime = 0;
 float scaleModifier = 0.3f;
 Robot robot;
 Robot robot2;
-Wall wall(80, 15, 4);
+Wall wall(1,1,1);
 
 vector<Robot> robots;
 int active = 0;
@@ -42,7 +45,7 @@ void displayFrame(void) {
 	float lpos[4] = { 1, 0, 0, 0 };
     glLightfv(GL_LIGHT0, GL_POSITION, lpos);
 	mat4 P = perspective(1.5f, 1.0f, 1.0f, 50.0f);
-	mat4 V = lookAt(vec3(0.0f, 0.0f, -5.0f), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
+	mat4 V = lookAt(vec3(0.0f, 0.0f, -15.0f), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadMatrixf(value_ptr(P));
@@ -68,6 +71,10 @@ void nextFrame(void) {
 		if (!robots[i].onGround)
 		{
 			robots[i].calculateGravity(interval);
+		}
+		if (robots[i].isShooting)
+		{
+			robots[i].calculateShot(interval);
 		}
 	}
 	glutPostRedisplay();
@@ -106,6 +113,10 @@ void keyDown2(unsigned char c, int x, int y)
 	{
 		robots[active].Shot();
 	}
+	else if (c == 'w')
+	{
+		system("pause");
+	}
 }
 
 void keyDown(int c, int x, int y)
@@ -137,17 +148,18 @@ void keyDown(int c, int x, int y)
 
 void mousePassive(int x, int y)
 {
-	float angle = atan2(settings::y_res/2-y, settings::x_res/2-x);
-	angle += radians(90.0f);
-	if (robots[active].isTurnRight) angle = -angle;
-	//angle = angle * 180 / M_PI;
-	robots[active].right_arm.M = mat4(1.0);
-	robots[active].arm_angle = 0.0f;
-	robots[active].right_arm.M = translate(robots[active].right_arm.M, vec3(0, 0.94638f + 1.9f, 0));
-	robots[active].right_arm.M = rotate(robots[active].right_arm.M, angle, vec3(0.0f, 0.0f, 1.0f));
-	robots[active].arm_angle += angle;
-	robots[active].right_arm.M = translate(robots[active].right_arm.M, vec3(0, -0.94638f - 1.9f, 0));
-
+	if (!robots[active].isShooting)
+	{
+		float angle = atan2(settings::y_res / 2 - y, settings::x_res / 2 - x);
+		angle += radians(90.0f);
+		if (robots[active].isTurnRight) angle = -angle;
+		//angle = angle * 180 / M_PI;
+		robots[active].right_arm.M = mat4(1.0);
+		robots[active].right_arm.M = translate(robots[active].right_arm.M, vec3(0, 0.94638f + 1.9f, 0));
+		robots[active].right_arm.M = rotate(robots[active].right_arm.M, angle, vec3(0.0f, 0.0f, 1.0f));
+		robots[active].arm_angle = angle;
+		robots[active].right_arm.M = translate(robots[active].right_arm.M, vec3(0, -0.94638f - 1.9f, 0));
+	}
 }
 
 void keyUp(int c, int x, int y)
