@@ -18,6 +18,9 @@ public:
 	void MeshPushSide(int cubex, int cubey, int cubez, int side);
 	void CreateMesh(int xdir, int ydir, int zdir);
 	void DrawMesh(mat4 &V);
+	void GrassyCuboid();
+	void LetTheEarthPutForth();
+	void AddCube(int x, int y, int z, int mat);
 
 	Wall(int sizex, int sizey, int sizez);
 	~Wall();

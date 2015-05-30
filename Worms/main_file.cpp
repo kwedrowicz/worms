@@ -243,7 +243,7 @@ bool initTextures()
 }
 
 int main (int argc, char** argv) {
-	wall.BlowCylinder(-30, 15, 20);
+	wall.LetTheEarthPutForth();
 	wall.M = scale(wall.M, vec3(0.2, 0.2, 0.2));
 	wall.M = translate(wall.M, vec3(0, -40, 50));
 	wall.CreateMesh(0,0,0);

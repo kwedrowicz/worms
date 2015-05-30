@@ -6,6 +6,7 @@
 #include <vector>
 #include <math.h>
 #include <iostream>
+#include <time.h> 
 
 using namespace std;
 using namespace glm;
@@ -26,8 +27,6 @@ Wall::Wall(int sizex, int sizey, int sizez){
 	shininess = 0;
 
 	M = mat4(1);
-	materials.push_back(Material(1, 0.5, 0));
-	materials.push_back(Material(0, 1, 0));
 	xnum = sizex;
 	ynum = sizey;
 	znum = sizez;
@@ -45,13 +44,28 @@ Wall::Wall(int sizex, int sizey, int sizez){
 	int starty = -1 * ynum / 2;
 	int startz = -1 * znum / 2;
 
-	for (int i = 0; i < sizex; i++){
-		for (int j = 0; j < sizey; j++){
-			for (int k = 0; k < sizez; k++){
+	
+}
+
+
+
+Wall::~Wall()
+{
+	
+}
+
+
+void Wall::GrassyCuboid(){
+	materials.push_back(Material(1, 0.5, 0));
+	materials.push_back(Material(0, 1, 0));
+	for (int i = 0; i < xnum; i++){
+		for (int j = 0; j < ynum; j++){
+			for (int k = 0; k < znum; k++){
+				cubes[i][j][k].broken = 0;
 				//cubes[i][j][k].M = translate(cubes[i][j][k].M, vec3(startx, starty, startz));
 				//cubes[i][j][k].M = translate(cubes[i][j][k].M, vec3(i, j, k));
-				if (i == 0 || i == sizex - 1 || j == 0 || j == sizey - 1 || k == 0 || k == sizez - 1){
-					cubes[i][j][k].visible=1;
+				if (i == 0 || i == xnum - 1 || j == 0 || j == ynum - 1 || k == 0 || k == znum - 1){
+					cubes[i][j][k].visible = 1;
 					cubes[i][j][k].material = 1;
 				}
 				else{
@@ -62,11 +76,74 @@ Wall::Wall(int sizex, int sizey, int sizez){
 }
 
 
-Wall::~Wall()
-{
-	
+void Wall::AddCube(int x, int y, int z, int mat){
+	cubes[x][y][z].material = mat;
+	cubes[x][y][z].visible = 1;
+	cubes[x][y][z].broken = 0;
 }
 
+
+bool Roll(float probability){
+	if (probability >= (float)rand() / (float)RAND_MAX) {
+		return 1;
+	}
+	else{
+		return 0;
+	}
+}
+
+
+void Wall::LetTheEarthPutForth(){
+	materials.push_back(Material(0, 0.8, 0));//mat 0 grass
+	materials.push_back(Material(0.6, 0.3, 0));//mat 1 dirt
+	materials.push_back(Material(0.4, 0.5, 0.6));//mat 2 stone
+
+	int NStartingPoints=5;
+	int StartingPointsReach = ynum / 10;
+
+	int GrowthDistance = 2;
+	float GrowthProbality = 0.07;
+
+	int StoneReachMin = ynum / 2;
+	int StoneReachMax = ynum / 1.8;
+
+	srand(time(NULL));
+
+	for (int i = 0; i < NStartingPoints; i++){
+		int xp = rand() % (xnum/2) + xnum/4;
+		int zp = rand() % (znum / 2) + znum/4;
+		int yp = rand() % StartingPointsReach;
+		AddCube(xp, yp, zp, 2);
+	}
+	
+	for (int j = 1; j < ynum; j++){
+		for (int i = 0; i < xnum; i++){
+			for (int k = 0; k < znum; k++){
+				if (cubes[i][j - 1][k].visible){
+					AddCube(i, j, k, 2);
+				}
+				else{
+					for (int x = -1 * GrowthDistance; x <= GrowthDistance; x++){
+						for (int z = -1 * GrowthDistance; z <= GrowthDistance; z++){
+							if (i + x >= 0 && i + x < xnum && k + z >= 0 && k + z < znum){
+								if (x != 0 || k != 0){
+									if (cubes[i + x][j - 1][k + z].visible){
+										if (Roll(GrowthProbality / (abs(x)*abs(x) + abs(z)*abs(z)))){
+											AddCube(i, j, k, 2);
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	
+	
+}
 
 /*
 void Wall::Draw(mat4 &V)

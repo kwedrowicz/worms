@@ -9,7 +9,7 @@ using namespace std;
 Cube::Cube()
 {
 	//M = mat4(1);
-	broken = 0;
+	broken = 1;
 	visible = 0;
 	material = 0;
 	for (int i = 0; i < 8; i++){
