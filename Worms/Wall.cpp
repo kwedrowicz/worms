@@ -96,13 +96,13 @@ bool Roll(float probability){
 void Wall::LetTheEarthPutForth(){
 	materials.push_back(Material(0, 0.8, 0));//mat 0 grass
 	materials.push_back(Material(0.6, 0.3, 0));//mat 1 dirt
-	materials.push_back(Material(0.4, 0.5, 0.6));//mat 2 stone
+	materials.push_back(Material(0.4, 0.6, 0.6));//mat 2 stone
 
-	int NStartingPoints=5;
+	int NStartingPoints=8;
 	int StartingPointsReach = ynum / 10;
 
 	int GrowthDistance = 2;
-	float GrowthProbality = 0.07;
+	float GrowthProbality = 0.06;
 
 	int StoneReachMin = ynum / 2;
 	int StoneReachMax = ynum / 1.8;
