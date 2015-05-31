@@ -33,7 +33,7 @@ int lastTime = 0;
 float scaleModifier = 0.3f;
 Robot robot;
 Robot robot2;
-Wall wall(200, 70, 30);
+Wall wall(300, 120, 40);
 
 
 vector<Robot> robots;
@@ -245,7 +245,7 @@ bool initTextures()
 int main (int argc, char** argv) {
 	wall.LetTheEarthPutForth();
 	wall.M = scale(wall.M, vec3(0.2, 0.2, 0.2));
-	wall.M = translate(wall.M, vec3(0, -40, 50));
+	wall.M = translate(wall.M, vec3(0, -40, 70));
 	wall.CreateMesh(0,0,0);
 
 	initializeGLUT(&argc, argv);

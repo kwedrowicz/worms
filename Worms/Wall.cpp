@@ -94,11 +94,13 @@ bool Roll(float probability){
 
 
 void Wall::LetTheEarthPutForth(){
-	materials.push_back(Material(0, 0.8, 0));//mat 0 grass
+	materials.push_back(Material(0, 0.9, 0));//mat 0 grass
 	materials.push_back(Material(0.6, 0.3, 0));//mat 1 dirt
-	materials.push_back(Material(0.4, 0.6, 0.6));//mat 2 stone
+	materials.push_back(Material(0.3, 0.5, 0.5));//mat 2 stone
+	materials.push_back(Material(0.5, 0.7, 0.4));//mat 3 wood
+	materials.push_back(Material(0.2, 1, 0.2));//mat 4 leaf
 
-	int NStartingPoints=8;
+	int NStartingPoints=10;
 	int StartingPointsReach = ynum / 10;
 
 	int GrowthDistance = 2;
@@ -106,6 +108,13 @@ void Wall::LetTheEarthPutForth(){
 
 	int StoneReachMin = ynum / 2;
 	int StoneReachMax = ynum / 1.8;
+
+	int TreeMinThickness = ceil(znum / 15.0);
+	int TreeMaxThickness = TreeMinThickness * 1.5;
+	float TreeCrownThickness = 1.5;
+	int TreeMaxHeight = TreeMaxThickness * (6 + ceil(TreeCrownThickness) + 0.5);
+	int NTrees = 5;
+
 
 	srand(time(NULL));
 
@@ -115,12 +124,13 @@ void Wall::LetTheEarthPutForth(){
 		int yp = rand() % StartingPointsReach;
 		AddCube(xp, yp, zp, 2);
 	}
-	
-	for (int j = 1; j < ynum; j++){
+	int matt=2;
+	for (int j = 1; j < ynum - TreeMaxHeight; j++){
+		if (j == ynum - TreeMaxHeight - 1){ matt = 0; }
 		for (int i = 0; i < xnum; i++){
 			for (int k = 0; k < znum; k++){
 				if (cubes[i][j - 1][k].visible){
-					AddCube(i, j, k, 2);
+					AddCube(i, j, k, matt);
 				}
 				else{
 					for (int x = -1 * GrowthDistance; x <= GrowthDistance; x++){
@@ -129,7 +139,7 @@ void Wall::LetTheEarthPutForth(){
 								if (x != 0 || k != 0){
 									if (cubes[i + x][j - 1][k + z].visible){
 										if (Roll(GrowthProbality / (abs(x)*abs(x) + abs(z)*abs(z)))){
-											AddCube(i, j, k, 2);
+											AddCube(i, j, k, matt);
 										}
 									}
 								}
@@ -141,6 +151,35 @@ void Wall::LetTheEarthPutForth(){
 		}
 	}
 	
+	for (int n = 0; n < NTrees; n++){
+		
+		int xp = (rand() % (int)(xnum * 4 / 6 / NTrees)) + (xnum / 6) + (xnum * 4 * n  / 6 / NTrees);
+		int yp = ynum - TreeMaxHeight - 1;
+		int zp = znum / 2;
+		int thick = TreeMinThickness + rand() % (TreeMaxThickness - TreeMinThickness +1);
+		int high = thick * (4 + (rand() % 3));
+
+		if (cubes[xp][yp - 1][zp].visible){
+			for (int i = -1 * thick / 2; i < -1 * thick / 2 + thick; i++){
+				for (int k = -1 * thick / 2; k < -1 * thick / 2 + thick; k++){
+					for (int j = 0; j < high; j++){
+						//if (xp + i>0 && xp + i<xnum && yp + j>0 && yp + j<ynum && zp + k>0 && zp + k<znum)
+						AddCube(xp + i, yp + j, zp + k, 3);
+					}
+				}
+			}
+			for (int i = -1 * thick * TreeCrownThickness ; i < thick * TreeCrownThickness; i++){
+				for (int j = -1 * thick * TreeCrownThickness; j < thick * TreeCrownThickness; j++){
+					for (int k = -1 * thick * TreeCrownThickness; k < thick * TreeCrownThickness; k++){
+						if (pow(i,2) + pow(j,2) + pow(k,2) < pow(thick*TreeCrownThickness,2)){
+							AddCube(xp + i, yp + j + high, zp + k, 4);
+						}
+					}
+				}
+			}
+		}
+
+	}
 	
 	
 }
