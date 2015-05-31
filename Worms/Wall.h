@@ -21,6 +21,7 @@ public:
 	void GrassyCuboid();
 	void LetTheEarthPutForth();
 	void AddCube(int x, int y, int z, int mat);
+	float HowFarFromSurface(mat4 &myWorldMatrix);
 
 	Wall(int sizex, int sizey, int sizez);
 	~Wall();

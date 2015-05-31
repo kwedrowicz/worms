@@ -56,6 +56,7 @@ void displayFrame(void) {
 	{
 		robots[i].Draw(V);
 		wall.DrawMesh(V);
+		wall.HowFarFromSurface(robots[i].M);
 	}
 	//missile.Draw(V,robots[0].M);
 	glutSwapBuffers();

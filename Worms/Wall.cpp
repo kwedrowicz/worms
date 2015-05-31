@@ -380,6 +380,14 @@ void Wall::MeshPushSide(int cubex, int cubey, int cubez, int side){
 
 //xdir ==0: rendering both left and right <0 rendering only left >0 rendering only right etc
 void Wall::CreateMesh(int xdir, int ydir, int zdir){
+	currVIndex = -1;
+	indicesNumber = 0;
+	meshIndices.clear();
+	meshColors.clear();
+	meshNormals.clear();
+	meshVertices.clear();
+
+
 	for (int i = 0; i<xnum; i++){
 		for (int j = 0; j<ynum; j++){
 			for (int k = 0; k<znum; k++){
@@ -436,4 +444,15 @@ void Wall::DrawMesh(mat4 &V){
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);
 
+}
+
+float Wall::HowFarFromSurface(mat4 &MyWorldMatrix){
+
+	vec3 point(MyWorldMatrix[3]);
+	vec4 pos = MyWorldMatrix * vec4(point,1);
+	pos = M*pos;
+	for (int i = 0; i < 4; i++){
+		cout << pos[0] << ", " << pos[1] << ", " << pos[2] << ", " << pos[3] << "\n";
+	}
+	return 0;
 }
