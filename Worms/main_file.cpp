@@ -33,7 +33,8 @@ int lastTime = 0;
 float scaleModifier = 0.3f;
 Robot robot;
 Robot robot2;
-Wall wall(300, 120, 40);
+//Wall wall(300, 120, 40);
+Wall wall(10, 10, 10);
 
 
 vector<Robot> robots;
@@ -111,7 +112,7 @@ void keyDown2(unsigned char c, int x, int y)
 		robots[active].right_arm.M = translate(robots[active].right_arm.M, vec3(0, -0.94638f - 1.89f,0));
 
 	}
-	else if (c == 'q')
+	else if (c == 'q' && !robots[active].isShooting)
 	{
 		robots[active].Shot();
 	}

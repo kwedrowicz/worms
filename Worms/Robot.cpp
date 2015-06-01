@@ -94,9 +94,10 @@ void Robot::Draw(mat4 &view)
 	right_arm.Draw(view,M*body.M);
 	ball.Draw(view,M);
 	eyes.Draw(view,M);
-	if (isShooting)
+	if (isShooting && missileFlyTime)
 	{
 		missile.Draw(view, M);
+		//system("pause");
 	}
 	else
 	{
@@ -107,8 +108,8 @@ void Robot::Draw(mat4 &view)
 void Robot::Shot()
 {
 //	missile.M = mat4(1.0);
-	missile_speed = 15.0f;
-
+	missile_speed = 10.0f;
+	rememberAngle = arm_angle;
 	vec4 startPoint = vec4(missile_translate_x, missile_translate_y, 0.0f, 1.0f);
 	mat4 M2 = mat4(1.0f);
 	M2 = translate(M2, vec3(0, 0.94638f + 1.9f, 0));
@@ -116,7 +117,9 @@ void Robot::Shot()
 	M2 = translate(M2, vec3(0, -(0.94638f + 1.9f), 0));
 	startPoint = M2 * startPoint;
 	
-	missileX += startPoint.x; missileY += startPoint.y-0.2f; 
+	missileX += startPoint.x;
+	missileY += startPoint.y;
+	//missileY += startPoint.y;
 	//system("pause");
 
 	arm_angle -= (M_PI / 2);
@@ -135,7 +138,7 @@ void Robot::Shot()
 
 void Robot::calculateShot(int time)
 {
-	if (missileFlyTime < 2000)
+	if (missileFlyTime < 2500)
 	{
 		//cout << "Kat: " << arm_angle * 180 / M_PI << endl;
 		//system("pause");
@@ -152,15 +155,7 @@ void Robot::calculateShot(int time)
 		//missile.M = translate(missile.M, vec3(horizontalSpeed*time / 1000.0f, verticalSpeed*time / 1000.0f, 0.0f));
 		missileX += horizontalSpeed*time / 1000.0f; 
 		missileY += verticalSpeed*time / 1000.0f;
-		//if (new_arm_angle)
-		/*if (isTurnRight && new_arm_angle <= (M_PI / 2) && new_arm_angle >= -(M_PI / 2))
-			new_arm_angle += M_PI / 2;
-		else if (isTurnRight && (new_arm_angle > M_PI/2 || new_arm_angle < -(M_PI/2)))    //za siebie leci tylem
-			new_arm_angle -= M_PI / 2;
-		else if (!isTurnRight && new_arm_angle <= M_PI / 2 && new_arm_angle > -(M_PI / 2))
-			new_arm_angle -= M_PI / 2;
-		else if (!isTurnRight && (new_arm_angle > M_PI / 2 || new_arm_angle< -(M_PI/2)))  // przed siebie leci tylem
-			new_arm_angle += M_PI / 2;  */
+
 		if (isTurnRight && shootingRight)
 			new_arm_angle += M_PI / 2;
 		else if (isTurnRight && !shootingRight)
@@ -183,7 +178,8 @@ void Robot::calculateShot(int time)
 	{
 		missileFlyTime = 0;
 		missile.M = mat4(1.0);
-		missileX = 0; missileY = 0.77206f;
+		missileX = 0; missileY =0;
+		arm_angle = rememberAngle;
 		isShooting = false;		
 	}
 	/*missile.M = translate(missile.M, vec3(missile_translate_x, missile_translate_y, 0));
