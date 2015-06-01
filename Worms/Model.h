@@ -27,7 +27,6 @@ public:
 	void Draw(glm::mat4&,glm::mat4&);
 
 	boundingRectangle boundingBox;
-
 	Model();
 	~Model();
 };

@@ -75,6 +75,7 @@ void Model::Draw(glm::mat4 &view, glm::mat4 &model)
 	glDisableClientState(GL_NORMAL_ARRAY);
 }
 
+
 bool Model::loadObj(string path)
 {
 	/*vertices.clear();

@@ -14,6 +14,8 @@
 #include "tga.h"
 #include "Wall.h"
 #include <math.h>
+#include <Windows.h>
+#include <mmsystem.h>
 
 #define M_PI 3.14159265358979323846
 
@@ -115,6 +117,7 @@ void keyDown2(unsigned char c, int x, int y)
 	else if (c == 'q' && !robots[active].isShooting)
 	{
 		robots[active].Shot();
+		PlaySound(TEXT("shooting_sound.wav"),NULL, SND_ASYNC);
 	}
 	else if (c == 'w')
 	{
@@ -269,7 +272,7 @@ int main (int argc, char** argv) {
 	glEnable(GL_LIGHT0);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_COLOR_MATERIAL);
-
+	PlaySound(TEXT("intro.wav"), NULL, SND_ASYNC);
 	glutMainLoop();
 	//Kod zwalniaj¹cy zasoby tutaj
 
