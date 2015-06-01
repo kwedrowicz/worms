@@ -106,8 +106,11 @@ void Wall::LetTheEarthPutForth(){
 	int GrowthDistance = 2;
 	float GrowthProbality = 0.06;
 
-	int StoneReachMin = ynum / 2;
-	int StoneReachMax = ynum / 1.8;
+	//int StoneReachMin = ynum / 2;
+	//int StoneReachMax = ynum / 1.8;
+
+	int GrassThickness = ceil(ynum / 20);
+	int NGrassMounds = 3;
 
 	int TreeMinThickness = ceil(znum / 15.0);
 	int TreeMaxThickness = TreeMinThickness * 1.5;
@@ -125,8 +128,8 @@ void Wall::LetTheEarthPutForth(){
 		AddCube(xp, yp, zp, 2);
 	}
 	int matt=2;
-	for (int j = 1; j < ynum - TreeMaxHeight; j++){
-		if (j == ynum - TreeMaxHeight - 1){ matt = 0; }
+	for (int j = 1; j < ynum - TreeMaxHeight - GrassThickness; j++){
+		if (j == ynum - TreeMaxHeight - GrassThickness - 1){ matt = 0; }
 		for (int i = 0; i < xnum; i++){
 			for (int k = 0; k < znum; k++){
 				if (cubes[i][j - 1][k].visible){
@@ -150,14 +153,34 @@ void Wall::LetTheEarthPutForth(){
 			}
 		}
 	}
+
+	for (int n = 0; n < NGrassMounds; n++){
+		int xp = rand() % (xnum / 2) + xnum / 4;
+		int zp = rand() % (znum / 2) + znum / 4;
+		int yp = ynum - TreeMaxHeight - GrassThickness;
+	//	int height = 0.7
+	}
 	
 	for (int n = 0; n < NTrees; n++){
 		
 		int xp = (rand() % (int)(xnum * 4 / 6 / NTrees)) + (xnum / 6) + (xnum * 4 * n  / 6 / NTrees);
-		int yp = ynum - TreeMaxHeight - 1;
+		int yp = ynum - TreeMaxHeight;
 		int zp = znum / 2;
 		int thick = TreeMinThickness + rand() % (TreeMaxThickness - TreeMinThickness +1);
-		int high = thick * (4 + (rand() % 3));
+		int high = thick * (3 + (rand() % 4));
+
+		bool basefound = 0;
+		while (!basefound && yp>1){
+			yp--;
+			basefound = 1;
+			for (int i = -1 * thick / 2; i < -1 * thick / 2 + thick; i++){
+				for (int k = -1 * thick / 2; k < -1 * thick / 2 + thick; k++){
+					if (! (cubes[xp + i][yp - 1][zp + k].visible)){
+						basefound = 0;
+					}
+				}
+			}
+		}
 
 		if (cubes[xp][yp - 1][zp].visible){
 			for (int i = -1 * thick / 2; i < -1 * thick / 2 + thick; i++){
