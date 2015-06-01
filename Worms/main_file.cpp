@@ -14,6 +14,8 @@
 #include "tga.h"
 #include "Wall.h"
 #include <math.h>
+#include <Windows.h>
+#include <mmsystem.h>
 
 #define M_PI 3.14159265358979323846
 
@@ -33,7 +35,8 @@ int lastTime = 0;
 float scaleModifier = 0.3f;
 Robot robot;
 Robot robot2;
-Wall wall(300, 120, 40);
+//Wall wall(300, 120, 40);
+Wall wall(10, 10, 10);
 
 
 vector<Robot> robots;
@@ -111,9 +114,10 @@ void keyDown2(unsigned char c, int x, int y)
 		robots[active].right_arm.M = translate(robots[active].right_arm.M, vec3(0, -0.94638f - 1.89f,0));
 
 	}
-	else if (c == 'q')
+	else if (c == 'q' && !robots[active].isShooting)
 	{
 		robots[active].Shot();
+		PlaySound(TEXT("shooting_sound.wav"),NULL, SND_ASYNC);
 	}
 	else if (c == 'w')
 	{
@@ -268,7 +272,7 @@ int main (int argc, char** argv) {
 	glEnable(GL_LIGHT0);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_COLOR_MATERIAL);
-
+	PlaySound(TEXT("intro.wav"), NULL, SND_ASYNC);
 	glutMainLoop();
 	//Kod zwalniaj¹cy zasoby tutaj
 

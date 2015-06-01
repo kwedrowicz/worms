@@ -30,7 +30,6 @@ void Model::SetTexture(GLuint in_handle)
 void Model::Draw(glm::mat4 &view, glm::mat4 &model)
 {
 	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_INDEX_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
@@ -48,10 +47,34 @@ void Model::Draw(glm::mat4 &view, glm::mat4 &model)
 
 
 	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_INDEX_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_COLOR_ARRAY);
+	glEnableClientState(GL_NORMAL_ARRAY);
+	float wierzch[12] = {
+		boundingBox.bottomLeft.x, boundingBox.bottomLeft.y, boundingBox.bottomLeft.z,
+		boundingBox.bottomRight.x, boundingBox.bottomRight.y, boundingBox.bottomRight.z,
+		boundingBox.topRight.x, boundingBox.topRight.y, boundingBox.topRight.z,
+		boundingBox.topLeft.x, boundingBox.topLeft.y, boundingBox.topLeft.z
+	};
+	float colors[12] = {
+		0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0
+	};
+	float normalz[12] = {
+		0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1
+	};
+	glVertexPointer(3, GL_FLOAT, 0, wierzch);
+	glColorPointer(3, GL_FLOAT, 0, colors);
+	glNormalPointer(3, 0, normalz);
+	glDrawArrays(GL_QUADS, 0, 4);
+
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_COLOR_ARRAY);
+	glDisableClientState(GL_NORMAL_ARRAY);
 }
+
 
 bool Model::loadObj(string path)
 {
@@ -72,6 +95,8 @@ bool Model::loadObj(string path)
 	vector<int> vertexIndices;
 	string buf;
 	float fbuf;
+
+	float bottom = 0, top = 0, leftest = 0, rightest = 0; // iksDE // for boundingBox construction
 	while (!plik.eof())
 	{
 		plik >> buf;
@@ -79,8 +104,16 @@ bool Model::loadObj(string path)
 		{
 			plik >> fbuf;
 			local_vertices.push_back(fbuf);
+
+			if (fbuf > rightest) rightest = fbuf;
+			else if (fbuf < leftest) leftest = fbuf;
+
 			plik >> fbuf;
 			local_vertices.push_back(fbuf);
+
+			if (fbuf > top) top = fbuf;
+			else if (fbuf < bottom) bottom = fbuf;
+
 			plik >> fbuf;
 			local_vertices.push_back(fbuf);
 		}
@@ -129,5 +162,11 @@ bool Model::loadObj(string path)
 		vertex_count++;
 	}
 	plik.close();
+
+	boundingBox.bottomLeft = vec4(leftest, bottom, 0, 1);
+	boundingBox.bottomRight = vec4(rightest, bottom, 0, 1);
+	boundingBox.topLeft = vec4(leftest, top, 0, 1);
+	boundingBox.topRight = vec4(rightest, top, 0, 1);
+
 	return true;
 }
