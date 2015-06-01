@@ -5,6 +5,13 @@
 #include "GL/glut.h"
 #include "glm/glm.hpp"
 
+struct boundingRectangle
+{
+	glm::vec4 bottomLeft = glm::vec4(0,0,0,0);
+	glm::vec4 bottomRight = glm::vec4(0, 0, 0, 0);
+	glm::vec4 topRight = glm::vec4(0, 0, 0, 0);
+	glm::vec4 topLeft = glm::vec4(0, 0, 0, 0);
+};
 
 class Model
 {
@@ -18,6 +25,9 @@ public:
 	bool loadObj(std::string path);
 	void SetTexture(const GLuint);
 	void Draw(glm::mat4&,glm::mat4&);
+
+	boundingRectangle boundingBox;
+
 	Model();
 	~Model();
 };

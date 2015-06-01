@@ -97,7 +97,6 @@ void Robot::Draw(mat4 &view)
 	if (isShooting && missileFlyTime)
 	{
 		missile.Draw(view, M);
-		//system("pause");
 	}
 	else
 	{
@@ -119,8 +118,6 @@ void Robot::Shot()
 	
 	missileX += startPoint.x;
 	missileY += startPoint.y;
-	//missileY += startPoint.y;
-	//system("pause");
 
 	arm_angle -= (M_PI / 2);
 	
@@ -167,10 +164,7 @@ void Robot::calculateShot(int time)
 		missile.M = mat4(1.0f);		
 		missile.M = translate(missile.M, vec3(missileX, missileY, 0));
 		missile.M = rotate(missile.M, new_arm_angle, vec3(0, 0, 1));
-		missile.M = translate(missile.M, vec3(0, -0.77206f, 0));
-		//missile.M = translate(missile.M, vec3(-missileX, -missileY, 0));
-		
-		//missile.M = translate(missile.M, vec3(startPoint.x, startPoint.y - 0.2f, 0));
+		missile.M = translate(missile.M, vec3(0, -missile_translate_y, 0));
 
 		missileFlyTime += time;
 	}
@@ -182,14 +176,5 @@ void Robot::calculateShot(int time)
 		arm_angle = rememberAngle;
 		isShooting = false;		
 	}
-	/*missile.M = translate(missile.M, vec3(missile_translate_x, missile_translate_y, 0));
-	missile.M = rotate(missile.M, arm_angle, vec3(0.0f, 0.0f, 1.0f));
-	missile.M = translate(missile.M, vec3(-1*missile_translate_x, -1*missile_translate_y, 0));
-
-
-	missile_translate_x += (horizontalSpeed*time / 1000.0f);
-	missile_translate_y += (verticalSpeed*time / 1000.0f);*/
-
-
 }
 
