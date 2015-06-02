@@ -346,6 +346,7 @@ bool boxesCrossing(Model & a, Model & b)
 	return false;
 }
 
+// http://www.gamedev.net/page/resources/_/technical/game-programming/2d-rotated-rectangle-collision-r2604
 bool calculateCollisions()
 {
 	for (int i = 0; i < robots.size(); i++)
