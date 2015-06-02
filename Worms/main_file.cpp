@@ -65,6 +65,8 @@ void displayFrame(void) {
 	glutSwapBuffers();
 }
 
+bool calculateCollisions();
+
 void nextFrame(void) {
 	int actTime = glutGet(GLUT_ELAPSED_TIME);
 	int interval = actTime - lastTime;
@@ -80,6 +82,15 @@ void nextFrame(void) {
 		if (robots[i].isShooting)
 		{
 			robots[i].calculateShot(interval);
+			/*if (calculateCollisions())
+			{
+				robots[i].missileFlyTime = 0;
+				robots[i].missile.M = mat4(1.0);
+				robots[i].missileX = 0; 
+				robots[i].missileY = 0;
+				robots[i].arm_angle = robots[i].rememberAngle;
+				robots[i].isShooting = false;
+			}*/
 		}
 	}
 	glutPostRedisplay();
@@ -245,6 +256,108 @@ bool initTextures()
 		robots[i].missile.tex_handle = tmissile;
 	}
 	return true;
+}
+
+struct boxes_axis
+{
+	float x, y;
+};
+
+struct point
+{
+	float x, y;
+};
+
+float pr(vec4  & p, boxes_axis & a)
+{
+	float projection = (p.x * a.x + p.y * a.y) / (a.x*a.x + a.y*a.y);
+	float x, y;
+	x = projection * a.x;
+	y = projection * a.y;
+	return (x * a.x + y * a.y);
+}
+
+void update_min_max(float value, float & minimum, float & maximum)
+{
+	if (minimum == NULL || minimum > value)
+		minimum = value;
+	if (maximum == NULL || maximum < value)
+		minimum = value;
+}
+
+bool boxesCrossing(Model & a, Model & b)
+{
+
+	cout << a.boundingBox.topLeft.x << " " << a.boundingBox.topLeft.y << endl;
+	cout << a.boundingBox.topRight.x << " " << a.boundingBox.topRight.y << endl;
+	cout << a.boundingBox.bottomRight.x << " " << a.boundingBox.bottomRight.y << endl;
+	cout << a.boundingBox.bottomLeft.x << " " << a.boundingBox.bottomLeft.y << endl;
+
+	cout << endl << endl;
+
+	cout << b.boundingBox.topLeft.x << " " << b.boundingBox.topLeft.y << endl;
+	cout << b.boundingBox.topRight.x << " " << b.boundingBox.topRight.y << endl;
+	cout << b.boundingBox.bottomRight.x << " " << b.boundingBox.bottomRight.y << endl;
+	cout << b.boundingBox.bottomLeft.x << " " << b.boundingBox.bottomLeft.y << endl;
+
+	system("pause");
+
+	boxes_axis Axis[4];
+	Axis[0].x = a.boundingBox.topRight.x - a.boundingBox.topLeft.x;
+	Axis[0].y = a.boundingBox.topRight.y - a.boundingBox.topLeft.y;
+	Axis[1].x = a.boundingBox.topRight.x - a.boundingBox.bottomRight.x;
+	Axis[1].y = a.boundingBox.topRight.y - a.boundingBox.bottomRight.y;
+	Axis[2].x = b.boundingBox.topLeft.x - b.boundingBox.bottomLeft.x;
+	Axis[2].y = b.boundingBox.topLeft.y - b.boundingBox.bottomLeft.y;
+	Axis[3].x = b.boundingBox.topLeft.x - b.boundingBox.topRight.x;
+	Axis[3].y = b.boundingBox.topLeft.y - b.boundingBox.topRight.y;
+
+	float min_a, max_a, min_b, max_b, projection;
+	min_a = max_a = min_b = max_b = NULL;
+
+	for (int i = 0; i < 4; i++)
+	{
+		projection = pr(a.boundingBox.bottomLeft, Axis[i]);
+		update_min_max(projection, min_a, max_a);
+		projection = pr(a.boundingBox.bottomRight, Axis[i]);
+		update_min_max(projection, min_a, max_a);
+		projection = pr(a.boundingBox.topLeft, Axis[i]);
+		update_min_max(projection, min_a, max_a);
+		projection = pr(a.boundingBox.topRight, Axis[i]);
+		update_min_max(projection, min_a, max_a);
+
+
+		projection = pr(b.boundingBox.bottomLeft, Axis[i]);
+		update_min_max(projection, min_b, max_b);
+		projection = pr(b.boundingBox.bottomRight, Axis[i]);
+		update_min_max(projection, min_b, max_b);
+		projection = pr(b.boundingBox.topLeft, Axis[i]);
+		update_min_max(projection, min_b, max_b);
+		projection = pr(b.boundingBox.topRight, Axis[i]);
+		update_min_max(projection, min_b, max_b);
+
+		if (min_b <= max_a && max_b >= min_a)
+		{
+			return true;
+		}
+		else
+			min_a = max_a = min_b = max_b = NULL;
+	}
+	return false;
+}
+
+bool calculateCollisions()
+{
+	for (int i = 0; i < robots.size(); i++)
+	{
+		if (i == active)
+			continue;
+		if (boxesCrossing(robots[active].missile, robots[i].body))
+			return true;
+		if (boxesCrossing(robots[active].missile, robots[i].ball))
+			return true;
+	}
+	return false;
 }
 
 int main (int argc, char** argv) {
