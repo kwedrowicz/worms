@@ -40,6 +40,9 @@ Robot robot2;
 Wall wall(10, 10, 10);
 
 
+//tekstura tla
+GLuint skybox;
+
 vector<Robot> robots;
 int active = 0;
 
@@ -50,12 +53,69 @@ void displayFrame(void) {
 	float lpos[4] = { 1, 1, -1, 0 };
     glLightfv(GL_LIGHT0, GL_POSITION, lpos);
 	mat4 P = perspective(1.5f, 1.0f, 1.0f, 50.0f);
-	mat4 V = lookAt(vec3(0.0f, 0.0f, -15.0f), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
-
+//	mat4 V = lookAt(vec3(0.0f, 0.0f, -15.0f), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
 	glMatrixMode(GL_PROJECTION);
 	glLoadMatrixf(value_ptr(P));
-	glMatrixMode(GL_MODELVIEW);
+//	glMatrixMode(GL_MODELVIEW);
 	
+
+	//************************************************
+	float x = 0, y = 0, z = 0;
+	float width = 200, height = 200, length = 200;
+	glBindTexture(GL_TEXTURE_2D, skybox);
+	x = x - width / 2;
+	y = y - height / 2;
+	z = z - length / 2;
+
+	mat4 V = lookAt(vec3(0.0f, 0.0f, -15.0f), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
+	//mat4 V = lookAt(vec3(x, y, z), vec3(x, y, z-1), vec3(0.0f, 1.0f, 0.0f));
+	glMatrixMode(GL_MODELVIEW);
+
+
+	
+	glDisable(GL_NORMALIZE);
+	glDisable(GL_LIGHTING);
+	glDisable(GL_DEPTH_TEST);
+	//middle wall
+	glBegin(GL_QUADS);	
+	glTexCoord2f(0.5f, 0.34f); glVertex3f(x + width, y + height, z + length);
+	glTexCoord2f(0.5f, 0.65f); glVertex3f(x + width, y, z + length);
+	glTexCoord2f(0.25f, 0.65f); glVertex3f(x, y , z + length);
+	glTexCoord2f(0.25f, 0.34f); glVertex3f(x, y + height, z + length);
+	glEnd();
+	//left wall 
+	glBegin(GL_QUADS);
+	glTexCoord2f(0, 0.34f); glVertex3f(x, y + height, z);
+	glTexCoord2f(0.25f, 0.34f); glVertex3f(x, y + height, z + length);
+	glTexCoord2f(0.25f, 0.65f); glVertex3f(x, y, z + length);
+	glTexCoord2f(0, 0.65f); glVertex3f(x, y, z);
+	glEnd();
+	//right wall
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.75f, 0.34f); glVertex3f(x+width, y + height, z);
+	glTexCoord2f(0.5f, 0.34f); glVertex3f(x+width, y + height, z + length);
+	glTexCoord2f(0.5f, 0.65f); glVertex3f(x+width, y, z + length);
+	glTexCoord2f(0.75f, 0.65f); glVertex3f(x+width, y, z);
+	glEnd();
+	//top wall
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.25f, 0); glVertex3f(x , y + height, z);
+	glTexCoord2f(0.5f, 0); glVertex3f(x+width , y + height, z);
+	glTexCoord2f(0.5f, 0.34f); glVertex3f(x +width, y+height, z + length);
+	glTexCoord2f(0.25f, 0.34f); glVertex3f(x , y+height, z+length);
+	glEnd();
+	//bottom wall
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.25f, 0.65f); glVertex3f(x, y, z);
+	glTexCoord2f(0.5f, 0.65f); glVertex3f(x + width, y, z);
+	glTexCoord2f(0.5f, 1.0f); glVertex3f(x + width, y, z + length);
+	glTexCoord2f(0.25f, 1.0f); glVertex3f(x, y, z + length);
+	glEnd();
+
+	glEnable(GL_NORMALIZE);
+	glEnable(GL_LIGHTING);
+	glEnable(GL_DEPTH_TEST);
+	//***********************************************
 	for (int i = 0; i < robots.size(); i++)
 	{
 		robots[i].Draw(V);
@@ -189,6 +249,7 @@ void keyUp(int c, int x, int y)
 
 bool initTextures()
 {
+	glEnable(GL_TEXTURE_2D);
 	TGAImg img;
 	GLuint body, eyes, tmissile;
 	if (img.Load("tex_body.tga") == IMG_OK) {
@@ -242,8 +303,23 @@ bool initTextures()
 	else return 5;
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	glEnable(GL_TEXTURE_2D);
+	if (img.Load("tex_skybox.tga") == IMG_OK) {
+		glGenTextures(1, &skybox); //Zainicjuj uchwyt tex
+		glBindTexture(GL_TEXTURE_2D, skybox); //Przetwarzaj uchwyt tex
+		if (img.GetBPP() == 24) //Obrazek 24bit
+		{
+			glTexImage2D(GL_TEXTURE_2D, 0, 3, img.GetWidth(), img.GetHeight(), 0,
+				GL_RGB, GL_UNSIGNED_BYTE, img.GetImg());
+		}
+		else if (img.GetBPP() == 32) //Obrazek 32bit
+		{
+			glTexImage2D(GL_TEXTURE_2D, 0, 4, img.GetWidth(), img.GetHeight(), 0,
+				GL_RGBA, GL_UNSIGNED_BYTE, img.GetImg());
+		}
+	}
+	else return 5;
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 
 	for (int i = 0; i < robots.size(); i++)
@@ -397,14 +473,14 @@ bool calculateCollisions()
 		cout << i << endl;
 		if (i == active)
 			continue;
-		if (doOverlap(robots[active].missile, robots[i].body))
+		/*if (doOverlap(robots[active].missile, robots[i].body))
 			return true;
 		if (doOverlap(robots[active].missile, robots[i].ball))
+			return true;*/
+		if (boxesCrossing(robots[active].missile, robots[i].body))
 			return true;
-		/*if (boxesCrossing(robots[active].missile, robots[i].body))
-			return true;*/
-		/*if (boxesCrossing(robots[active].missile, robots[i].ball))
-			return true;*/
+		if (boxesCrossing(robots[active].missile, robots[i].ball))
+			return true;
 	}
 	return false;
 }
@@ -434,7 +510,7 @@ int main (int argc, char** argv) {
 	glEnable(GL_LIGHT0);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_COLOR_MATERIAL);
-	PlaySound(TEXT("intro.wav"), NULL, SND_ASYNC);
+	//PlaySound(TEXT("intro.wav"), NULL, SND_ASYNC);
 	glutMainLoop();
 	//Kod zwalniaj¹cy zasoby tutaj
 
