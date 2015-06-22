@@ -110,7 +110,7 @@ void Wall::LetTheEarthPutForth(){
 	materials.push_back(Material(0.5, 0.7, 0.4));//mat 3 wood
 	materials.push_back(Material(0.2, 1, 0.2));//mat 4 leaf
 
-	int NStartingPoints=7;
+	int NStartingPoints=10;
 	int StartingPointsReach = ynum / 10;
 
 	int GrowthDistance = 2;
@@ -122,7 +122,7 @@ void Wall::LetTheEarthPutForth(){
 	int GrassThickness = ceil(ynum / 20);
 	int NGrassMounds = 3;
 
-	int TreeMinThickness = ceil(znum / 10.0);
+	int TreeMinThickness = ceil(znum / 15.0);
 	int TreeMaxThickness = TreeMinThickness * 1.5;
 	float TreeCrownThickness = 1.5;
 	int TreeMaxHeight = TreeMaxThickness * (6 + ceil(TreeCrownThickness) + 0.5);
@@ -482,32 +482,37 @@ void Wall::DrawMesh(mat4 &V){
 float Wall::HowFarFromSurface(vec4 &myPosition){
 	vec4 pos = myPosition;
 	mat4 invM = inverse(M);
+<<<<<<< HEAD
+	pos = M * pos;
+	float zzz = pos.z + znum/2.0;
+=======
 	cout << "pos before mult:" << pos.y << "\n";
 	pos = invM * pos;
 	cout << "pos after mult:" << pos.y << "\n";
 	float yyy = pos.y + ynum/2.0;
+>>>>>>> origin/master
 	int x = roundd(pos.x) + xnum/2.0;
 	int y = roundd(pos.y) + ynum/2.0;
 	int z = roundd(pos.z) + znum/2.0;
-	int yover = 0;
+	int zover = 0;
 
-	if (x >= 0 && z >= 0 && x < xnum && z<znum && y>=0){
-		if (y >= ynum){
-			yover = y - ynum - 1;
-			y = ynum - 1;
+	if (x >= 0 && y >= 0 && x < xnum && y<ynum && z>=0){
+		if (z >= znum){
+			zover = z - znum - 1;
+			z = znum - 1;
 		}
 		if (!cubes[x][y][z].broken){
-			for (int i = y; i < ynum; i++){
-				if (cubes[x][i][z].broken){
-					return yyy - (float)i-0.5;
+			for (int i = z; i < znum; i++){
+				if (cubes[x][y][i].broken){
+					return zzz - (float)i-0.5;
 				}
 			}
 			return -100000;
 		}
 		else {
-			for (int i = y; i >= 0; i--){
-				if (!cubes[x][i][z].broken){
-					return yyy - (float)i+0.5;
+			for (int i = z; i >= 0; i--){
+				if (!cubes[x][y][i].broken){
+					return zzz - (float)i+0.5;
 				}
 			}
 			return 100000;

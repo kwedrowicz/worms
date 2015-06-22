@@ -50,7 +50,7 @@ void Model::Draw(glm::mat4 &view, glm::mat4 &model)
 	glDisableClientState(GL_NORMAL_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
-	glEnableClientState(GL_VERTEX_ARRAY);
+/*	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
 	float wierzch[12] = {
@@ -72,7 +72,7 @@ void Model::Draw(glm::mat4 &view, glm::mat4 &model)
 
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
-	glDisableClientState(GL_NORMAL_ARRAY);
+	glDisableClientState(GL_NORMAL_ARRAY); */
 }
 
 
