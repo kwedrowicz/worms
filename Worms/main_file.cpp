@@ -82,7 +82,7 @@ void nextFrame(void) {
 		if (robots[i].isShooting)
 		{
 			robots[i].calculateShot(interval);
-			/*if (calculateCollisions())
+			if (calculateCollisions())
 			{
 				robots[i].missileFlyTime = 0;
 				robots[i].missile.M = mat4(1.0);
@@ -90,7 +90,7 @@ void nextFrame(void) {
 				robots[i].missileY = 0;
 				robots[i].arm_angle = robots[i].rememberAngle;
 				robots[i].isShooting = false;
-			}*/
+			}
 		}
 	}
 	glutPostRedisplay();
@@ -285,8 +285,14 @@ void update_min_max(float value, float & minimum, float & maximum)
 		minimum = value;
 }
 
-bool boxesCrossing(Model & a, Model & b)
+bool boxesCrossing(Model & a1, Model & b1)
 {
+	
+	Model a = a1;
+	Model b = b1;
+
+	a.boundingBox = a.boundingBox * a.M2;
+	b.boundingBox = b.boundingBox * b.M2;
 
 	cout << a.boundingBox.topLeft.x << " " << a.boundingBox.topLeft.y << endl;
 	cout << a.boundingBox.topRight.x << " " << a.boundingBox.topRight.y << endl;

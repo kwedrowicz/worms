@@ -475,7 +475,7 @@ float Wall::HowFarFromSurface(mat4 &MyWorldMatrix){
 	vec4 pos = MyWorldMatrix * vec4(point,1);
 	pos = M*pos;
 	for (int i = 0; i < 4; i++){
-		cout << pos[0] << ", " << pos[1] << ", " << pos[2] << ", " << pos[3] << "\n";
+		//cout << pos[0] << ", " << pos[1] << ", " << pos[2] << ", " << pos[3] << "\n";
 	}
 	return 0;
 }

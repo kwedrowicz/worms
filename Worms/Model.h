@@ -11,6 +11,16 @@ struct boundingRectangle
 	glm::vec4 bottomRight = glm::vec4(0, 0, 0, 0);
 	glm::vec4 topRight = glm::vec4(0, 0, 0, 0);
 	glm::vec4 topLeft = glm::vec4(0, 0, 0, 0);
+
+	boundingRectangle operator * (const glm::mat4 & m)
+	{
+		boundingRectangle a;
+		a.bottomLeft = bottomLeft * m;
+		a.bottomRight = bottomRight * m;
+		a.topRight = topRight * m;
+		a.topLeft = topLeft * m;
+		return a;
+	}
 };
 
 class Model
