@@ -143,8 +143,6 @@ void nextFrame(void) {
 		{
 			robots[i].calculateGravity(interval);
 		}
-		
->>>>>>> origin/master
 		if (!robots[i].onGround)
 		{
 			robots[i].calculateGravity(interval);
