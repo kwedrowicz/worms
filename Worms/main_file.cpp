@@ -426,6 +426,10 @@ int main (int argc, char** argv) {
 
 	robots.push_back(Robot());
 	robots.push_back(Robot());
+	for (int i = 0; i < robots.size(); i++)
+	{
+		robots[i].M = scale(robots[i].M, vec3(0.2, 0.2, 0.2));
+	}
 	initTextures();
 
 	glEnable(GL_NORMALIZE);
@@ -433,7 +437,7 @@ int main (int argc, char** argv) {
 	glEnable(GL_LIGHT0);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_COLOR_MATERIAL);
-	PlaySound(TEXT("intro.wav"), NULL, SND_ASYNC);
+	//PlaySound(TEXT("intro.wav"), NULL, SND_ASYNC);
 	glutMainLoop();
 	//Kod zwalniaj¹cy zasoby tutaj
 
