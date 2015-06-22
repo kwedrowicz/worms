@@ -15,10 +15,10 @@ struct boundingRectangle
 	boundingRectangle operator * (const glm::mat4 & m)
 	{
 		boundingRectangle a;
-		a.bottomLeft = bottomLeft * m;
-		a.bottomRight = bottomRight * m;
-		a.topRight = topRight * m;
-		a.topLeft = topLeft * m;
+		a.bottomLeft = m * bottomLeft;
+		a.bottomRight = m * bottomRight;
+		a.topRight = m * topRight;
+		a.topLeft = m * topLeft;
 		return a;
 	}
 };

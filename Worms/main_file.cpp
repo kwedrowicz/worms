@@ -344,6 +344,7 @@ bool boxesCrossing(Model & a1, Model & b1)
 
 		if (min_b <= max_a && max_b >= min_a)
 		{
+			cout << "Przeciêcie" << endl;
 			return true;
 		}
 		else
