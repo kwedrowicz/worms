@@ -16,6 +16,7 @@
 #include <math.h>
 #include <Windows.h>
 #include <mmsystem.h>
+#include <algorithm>
 
 #define M_PI 3.14159265358979323846
 
@@ -353,17 +354,59 @@ bool boxesCrossing(Model & a1, Model & b1)
 	return false;
 }
 
+bool doOverlap(Model & a1, Model & b1)
+{
+	Model a = a1;
+	Model b = b1;
+
+	a.boundingBox = a.boundingBox * a.M2;
+	b.boundingBox = b.boundingBox * b.M2;
+ 
+	float r1x[] = { a.boundingBox.topLeft.x, a.boundingBox.topRight.x, a.boundingBox.bottomLeft.x, a.boundingBox.bottomRight.x };
+	float r1y[] = { a.boundingBox.topLeft.y, a.boundingBox.topRight.y, a.boundingBox.bottomLeft.y, a.boundingBox.bottomRight.y };
+	float r2x[] = { b.boundingBox.topLeft.x, b.boundingBox.topRight.x, b.boundingBox.bottomLeft.x, b.boundingBox.bottomRight.x };
+	float r2y[] = { b.boundingBox.topLeft.y, b.boundingBox.topRight.y, b.boundingBox.bottomLeft.y, b.boundingBox.bottomRight.y };
+
+	point l1, r1, l2, r2;
+	l1.x = *min_element(r1x, r1x + 4);
+	l1.y = *max_element(r1y, r1y + 4);
+	r1.x = *max_element(r1x, r1x + 4);
+	r1.y = *min_element(r1x, r1x + 4);
+
+	l2.x = *min_element(r2x, r2x + 4);
+	l2.y = *max_element(r2y, r2y + 4);
+	r2.x = *max_element(r2x, r2x + 4);
+	r2.y = *min_element(r2x, r2x + 4);
+
+
+	// If one rectangle is on left side of other
+	if (l1.x > r2.x || l2.x > r1.x)
+		return false;
+
+	// If one rectangle is above other
+	if (l1.y < r2.y || l2.y < r1.y)
+		return false;
+
+	return true;
+}
+
+
 // http://www.gamedev.net/page/resources/_/technical/game-programming/2d-rotated-rectangle-collision-r2604
 bool calculateCollisions()
 {
 	for (int i = 0; i < robots.size(); i++)
 	{
+		cout << i << endl;
 		if (i == active)
 			continue;
-		if (boxesCrossing(robots[active].missile, robots[i].body))
+		if (doOverlap(robots[active].missile, robots[i].body))
 			return true;
-		if (boxesCrossing(robots[active].missile, robots[i].ball))
+		if (doOverlap(robots[active].missile, robots[i].ball))
 			return true;
+		/*if (boxesCrossing(robots[active].missile, robots[i].body))
+			return true;*/
+		/*if (boxesCrossing(robots[active].missile, robots[i].ball))
+			return true;*/
 	}
 	return false;
 }
