@@ -110,7 +110,7 @@ void Wall::LetTheEarthPutForth(){
 	materials.push_back(Material(0.5, 0.7, 0.4));//mat 3 wood
 	materials.push_back(Material(0.2, 1, 0.2));//mat 4 leaf
 
-	int NStartingPoints=10;
+	int NStartingPoints=7;
 	int StartingPointsReach = ynum / 10;
 
 	int GrowthDistance = 2;
@@ -122,7 +122,7 @@ void Wall::LetTheEarthPutForth(){
 	int GrassThickness = ceil(ynum / 20);
 	int NGrassMounds = 3;
 
-	int TreeMinThickness = ceil(znum / 15.0);
+	int TreeMinThickness = ceil(znum / 10.0);
 	int TreeMaxThickness = TreeMinThickness * 1.5;
 	float TreeCrownThickness = 1.5;
 	int TreeMaxHeight = TreeMaxThickness * (6 + ceil(TreeCrownThickness) + 0.5);
