@@ -46,11 +46,12 @@ void Robot::jump()
 {
 	onGround = false;
 	verticalSpeed = 8.0f;
+	//M = translate(M, vec3(0.0f, verticalSpeed / 100.0f, 0.0f));
 }
 
 void Robot::calculateGravity(int time)
 {
-	verticalSpeed += gravity * time / 1000.0f;
+	/*verticalSpeed += gravity * time / 1000.0f;
 	float altitude_last = altitude;
 	altitude += verticalSpeed;
 	if (altitude > 0)
@@ -61,7 +62,10 @@ void Robot::calculateGravity(int time)
 		onGround = true;
 		altitude = 0.0f;
 		verticalSpeed = 0.0f;
-	}
+	}*/
+
+	verticalSpeed += gravity * time / 1000.0f;
+	M = translate(M, vec3(0.0f, verticalSpeed*time / 1000.0f, 0.0f));
 }
 
 void Robot::Draw(mat4 &view)

@@ -141,7 +141,12 @@ void nextFrame(void) {
 		cout << distance << endl;
 		if (distance > 0.0f)
 		{
-			robots[i].calculateGravity(interval);
+			robots[i].onGround = false;
+		}
+		else
+		{
+			robots[i].onGround = true;
+			robots[i].verticalSpeed = 0.0f;
 		}
 		if (!robots[i].onGround)
 		{

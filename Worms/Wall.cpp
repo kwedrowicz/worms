@@ -489,7 +489,7 @@ float Wall::HowFarFromSurface(vec4 &myPosition){
 	int x = roundd(pos.x) + xnum/2.0;
 	int y = roundd(pos.y) + ynum;
 	int z = roundd(pos.z) + znum/2.0;
-	cout << "pos after all:" << x << " " << y << " " << z << "\n";
+	//cout << "pos after all:" << x << " " << y << " " << z << "\n";
 	int yover = 0;
 
 	if (x >= 0 && z >= 0 && x < xnum && z<znum && y>=0){
