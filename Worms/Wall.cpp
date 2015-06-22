@@ -11,6 +11,16 @@
 using namespace std;
 using namespace glm;
 
+double round(double d)
+{
+	return floor(d + 0.5);
+}
+
+float round(float d)
+{
+	return floor(d + 0.5);
+}
+
 
 Wall::Wall(int sizex, int sizey, int sizez){
 	currVIndex = -1;
@@ -469,13 +479,41 @@ void Wall::DrawMesh(mat4 &V){
 
 }
 
-float Wall::HowFarFromSurface(mat4 &MyWorldMatrix){
+float Wall::HowFarFromSurface(mat4 &MyWorldMatrix, vec4 &myPosition){
 
-	vec3 point(MyWorldMatrix[3]);
-	vec4 pos = MyWorldMatrix * vec4(point,1);
-	pos = M*pos;
-	for (int i = 0; i < 4; i++){
-		//cout << pos[0] << ", " << pos[1] << ", " << pos[2] << ", " << pos[3] << "\n";
+	vec4 pos = MyWorldMatrix*myPosition;
+	mat4 invM = inverse(M);
+	pos = M * pos;
+	float zzz = pos.z + znum/2.0;
+	int x = round(pos.x) + xnum/2.0;
+	int y = round(pos.y) + ynum/2.0;
+	int z = round(pos.z) + znum/2.0;
+	int zover = 0;
+
+	if (x >= 0 && y >= 0 && x < xnum && y<ynum && z>=0){
+		if (z >= znum){
+			zover = z - znum - 1;
+			z = znum - 1;
+		}
+		if (!cubes[x][y][z].broken){
+			for (int i = z; i < znum; i++){
+				if (cubes[x][y][i].broken){
+					return zzz - (float)i-0.5;
+				}
+			}
+			return -100000;
+		}
+		else {
+			for (int i = z; i >= 0; i--){
+				if (!cubes[x][y][i].broken){
+					return zzz - (float)i+0.5;
+				}
+			}
+			return 100000;
+		}
+	}
+	else{
+		return 100000;
 	}
 	return 0;
 }
