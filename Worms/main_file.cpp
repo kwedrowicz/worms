@@ -74,6 +74,13 @@ void nextFrame(void) {
 	robots[active].ball.M = rotate(robots[active].ball.M,-1*robots[active].direction * speed/60, vec3(0.0, 0.0, 1.0));
 	for (int i = 0; i < robots.size(); i++)
 	{
+		float distance = wall.HowFarFromSurface(robots[i].body.M2, vec4((robots[i].body.boundingBox.bottomLeft.x + robots[i].body.boundingBox.bottomRight.x) / 2, robots[i].body.boundingBox.bottomRight.y, 0.0f, 0.0f));
+		cout << distance << endl;
+		if (distance > 0.0f)
+		{
+			robots[i].calculateGravity(interval);
+		}
+
 		if (!robots[i].onGround)
 		{
 			robots[i].calculateGravity(interval);
