@@ -89,17 +89,31 @@ void Robot::Draw(mat4 &view)
 	glDisableClientState(GL_INDEX_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);*/
+	
+	body.M2 = M*body.M;
 	body.Draw(view, M);
+
+	left_arm.M2 = M*body.M*left_arm.M;
 	left_arm.Draw(view,M*body.M);
+
+	right_arm.M2 = M*body.M*right_arm.M;
 	right_arm.Draw(view,M*body.M);
+
+	ball.M2 = M*ball.M;
 	ball.Draw(view,M);
+
+	eyes.M2 = M*eyes.M;
 	eyes.Draw(view,M);
+
+
 	if (isShooting && missileFlyTime)
 	{
+		missile.M2 = M*missile.M;
 		missile.Draw(view, M);
 	}
 	else
 	{
+		missile.M2 = M*right_arm.M*missile.M;
 		missile.Draw(view, M*right_arm.M);
 	}
 }

@@ -38,7 +38,7 @@ void Model::Draw(glm::mat4 &view, glm::mat4 &model)
 	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
 
-	glLoadMatrixf(value_ptr(view*model*M));
+	glLoadMatrixf(value_ptr(view*M2));
 	glBindTexture(GL_TEXTURE_2D, tex_handle);
 	glVertexPointer(3, GL_FLOAT, 0, &vertices[0]);
 	glTexCoordPointer(2, GL_FLOAT, 0, &textures[0]);
