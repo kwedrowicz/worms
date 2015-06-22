@@ -397,14 +397,14 @@ bool calculateCollisions()
 		cout << i << endl;
 		if (i == active)
 			continue;
-		if (doOverlap(robots[active].missile, robots[i].body))
+		/*if (doOverlap(robots[active].missile, robots[i].body))
 			return true;
 		if (doOverlap(robots[active].missile, robots[i].ball))
+			return true;*/
+		if (boxesCrossing(robots[active].missile, robots[i].body))
 			return true;
-		/*if (boxesCrossing(robots[active].missile, robots[i].body))
-			return true;*/
-		/*if (boxesCrossing(robots[active].missile, robots[i].ball))
-			return true;*/
+		if (boxesCrossing(robots[active].missile, robots[i].ball))
+			return true;
 	}
 	return false;
 }
