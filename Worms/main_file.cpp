@@ -283,7 +283,7 @@ void update_min_max(float value, float & minimum, float & maximum)
 	if (minimum == NULL || minimum > value)
 		minimum = value;
 	if (maximum == NULL || maximum < value)
-		minimum = value;
+		maximum = value;
 }
 
 bool boxesCrossing(Model & a1, Model & b1)
@@ -307,7 +307,7 @@ bool boxesCrossing(Model & a1, Model & b1)
 	cout << b.boundingBox.bottomRight.x << " " << b.boundingBox.bottomRight.y << endl;
 	cout << b.boundingBox.bottomLeft.x << " " << b.boundingBox.bottomLeft.y << endl;
 
-	system("pause");
+	//system("pause");
 
 	boxes_axis Axis[4];
 	Axis[0].x = a.boundingBox.topRight.x - a.boundingBox.topLeft.x;
@@ -321,7 +321,6 @@ bool boxesCrossing(Model & a1, Model & b1)
 
 	float min_a, max_a, min_b, max_b, projection;
 	min_a = max_a = min_b = max_b = NULL;
-
 	for (int i = 0; i < 4; i++)
 	{
 		projection = pr(a.boundingBox.bottomLeft, Axis[i]);
@@ -342,16 +341,16 @@ bool boxesCrossing(Model & a1, Model & b1)
 		update_min_max(projection, min_b, max_b);
 		projection = pr(b.boundingBox.topRight, Axis[i]);
 		update_min_max(projection, min_b, max_b);
-
+		 
 		if (min_b <= max_a && max_b >= min_a)
 		{
-			cout << "Przeciêcie" << endl;
-			return true;
+			min_a = max_a = min_b = max_b = NULL;
 		}
 		else
-			min_a = max_a = min_b = max_b = NULL;
+			return false;
 	}
-	return false;
+
+	return true;
 }
 
 bool doOverlap(Model & a1, Model & b1)
