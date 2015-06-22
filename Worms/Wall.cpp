@@ -479,12 +479,18 @@ void Wall::DrawMesh(mat4 &V){
 
 }
 
-float Wall::HowFarFromSurface(mat4 &MyWorldMatrix, vec4 &myPosition){
-
-	vec4 pos = MyWorldMatrix*myPosition;
+float Wall::HowFarFromSurface(vec4 &myPosition){
+	vec4 pos = myPosition;
 	mat4 invM = inverse(M);
+<<<<<<< HEAD
 	pos = M * pos;
 	float zzz = pos.z + znum/2.0;
+=======
+	cout << "pos before mult:" << pos.y << "\n";
+	pos = invM * pos;
+	cout << "pos after mult:" << pos.y << "\n";
+	float yyy = pos.y + ynum/2.0;
+>>>>>>> origin/master
 	int x = roundd(pos.x) + xnum/2.0;
 	int y = roundd(pos.y) + ynum/2.0;
 	int z = roundd(pos.z) + znum/2.0;
