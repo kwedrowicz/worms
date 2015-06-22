@@ -11,12 +11,12 @@
 using namespace std;
 using namespace glm;
 
-double round(double d)
+double roundd(double d)
 {
 	return floor(d + 0.5);
 }
 
-float round(float d)
+float roundd(float d)
 {
 	return floor(d + 0.5);
 }
@@ -485,9 +485,9 @@ float Wall::HowFarFromSurface(mat4 &MyWorldMatrix, vec4 &myPosition){
 	mat4 invM = inverse(M);
 	pos = M * pos;
 	float zzz = pos.z + znum/2.0;
-	int x = round(pos.x) + xnum/2.0;
-	int y = round(pos.y) + ynum/2.0;
-	int z = round(pos.z) + znum/2.0;
+	int x = roundd(pos.x) + xnum/2.0;
+	int y = roundd(pos.y) + ynum/2.0;
+	int z = roundd(pos.z) + znum/2.0;
 	int zover = 0;
 
 	if (x >= 0 && y >= 0 && x < xnum && y<ynum && z>=0){
