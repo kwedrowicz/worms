@@ -511,6 +511,12 @@ int main (int argc, char** argv) {
 
 	robots.push_back(Robot());
 	robots.push_back(Robot());
+
+	for (int i = 0; i < robots.size(); i++)
+	{
+		robots[i].M = scale(robots[i].M, vec3(0.2f, 0.2f, 0.2f));
+	}
+
 	initTextures();
 
 	glEnable(GL_NORMALIZE);
