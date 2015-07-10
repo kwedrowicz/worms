@@ -47,7 +47,7 @@ Wall wall(250, 100, 25);
 
 //hmury
 vector<Cloud> clouds;
-
+const int cloudCount = 10;
 
 vector<Robot> robots;
 int active = 0;
@@ -126,8 +126,9 @@ void nextFrame(void) {
 	
 	for (int i = 0; i < clouds.size(); i++)
 	{
-		clouds[i].positionX += interval * clouds[i].speed;
-	}
+		clouds[i].positionX += clouds[i].speed * interval/1000.0;
+	} 
+	//clouds[0].positionX += 0.1;
 	glutPostRedisplay();
 }
 
@@ -461,9 +462,10 @@ int main (int argc, char** argv) {
 	glutSpecialUpFunc(keyUp);
 	srand(time(NULL));
 
-	clouds.push_back(Cloud());
-	clouds.push_back(Cloud());
-	clouds.push_back(Cloud());
+	for (int i = 0; i < cloudCount; i++)
+	{
+		clouds.push_back(Cloud());
+	}
 
 	robots.push_back(Robot());
 	robots.push_back(Robot());

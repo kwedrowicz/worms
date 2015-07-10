@@ -12,7 +12,7 @@ public:
 	float cloudDistanceTravelled = 0;
 	float radius, scaleX;
 	glm::mat4 M;
-	float positionY, positionX;
+	float positionY, positionX, positionZ;
 	float speed;
 
 	Cloud();
