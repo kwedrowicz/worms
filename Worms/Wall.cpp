@@ -26,7 +26,6 @@ Wall::Wall(int sizex, int sizey, int sizez){
 	currVIndex = -1;
 	indicesNumber = 0;
 
-
 	for (int i = 0; i < 3; i++)
 	{
 		ambient[i] = 0.2;
