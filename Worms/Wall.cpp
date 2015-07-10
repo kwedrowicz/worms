@@ -104,11 +104,11 @@ bool Roll(float probability){
 
 
 void Wall::LetTheEarthPutForth(){
-	materials.push_back(Material(0, 0.9, 0));//mat 0 grass
-	materials.push_back(Material(0.6, 0.3, 0));//mat 1 dirt
-	materials.push_back(Material(0.3, 0.5, 0.5));//mat 2 stone
-	materials.push_back(Material(0.5, 0.7, 0.4));//mat 3 wood
-	materials.push_back(Material(0.2, 1, 0.2));//mat 4 leaf
+	materials.push_back(Material(0, 1.35, 0));//mat 0 grass
+	materials.push_back(Material(1.2, 0.6, 0));//mat 1 dirt
+	materials.push_back(Material(0.6, 1.0, 1));//mat 2 stone
+	materials.push_back(Material(1, 1.4, 0.8));//mat 3 wood
+	materials.push_back(Material(0.6, 3, 0.6));//mat 4 leaf
 
 	int NStartingPoints=10;
 	int StartingPointsReach = ynum / 10;
@@ -483,12 +483,12 @@ float Wall::HowFarFromSurface(vec4 &myPosition){
 	vec4 pos = myPosition;
 	mat4 invM = inverse(M);
 	//cout << "pos before mult:" << pos.x<<" " << pos.y<<" " << pos.z << "\n";
-	pos = pos * invM;
+	pos = invM * pos;
 	
-	float yyy = pos.y + ynum;
-	int x = roundd(pos.x) + xnum/2.0;
-	int y = roundd(pos.y) + ynum;
-	int z = roundd(pos.z) + znum/2.0;
+	float yyy = pos.y + (int)(ynum)/2.0f;
+	int x = roundd(pos.x) + xnum/2.0f;
+	int y = roundd(pos.y) + ynum/2.0f +60;
+	int z = roundd(pos.z) + znum/2.0f;
 	//cout << "pos after all:" << x << " " << y << " " << z << "\n";
 	int yover = 0;
 
@@ -500,22 +500,22 @@ float Wall::HowFarFromSurface(vec4 &myPosition){
 		if (!cubes[x][y][z].broken){
 			for (int i = y; i < ynum; i++){
 				if (cubes[x][i][z].broken){
-					return yyy - (float)i-0.5;
+					return y - i;
 				}
 			}
-			return -100000;
+			return y -ynum;
 		}
 		else {
 			for (int i = y; i >= 0; i--){
 				if (!cubes[x][i][z].broken){
-					return yyy - (float)i+0.5;
+					return y - i;
 				}
 			}
 			return 100000;
 		}
 	}
 	else{
-		return 100000;
+		return 200000;
 	}
 	return 0;
 }

@@ -31,6 +31,10 @@ namespace settings{
 	const int y_win_pos = 0;
 }
 
+
+int hardcodeiterator = 0;
+
+
 float speed = 0; //60 stopni/s
 int lastTime = 0;
 float scaleModifier = 0.3f;
@@ -138,10 +142,13 @@ void nextFrame(void) {
 		Model body = robots[i].body;
 		body.boundingBox = body.boundingBox * robots[i].body.M2;
 		float distance = wall.HowFarFromSurface(vec4((body.boundingBox.bottomLeft.x + body.boundingBox.bottomRight.x) / 2.0f, body.boundingBox.bottomRight.y, 0.0f, 0.0f));
-		cout << distance << endl;
+		hardcodeiterator++;
+		if (hardcodeiterator<50){  //warunek i zmienna do wyrzucenia po rozwiazaniu problemu
+			cout << distance << endl;
+		}
 		if (distance > 0.0f)
 		{
-			robots[i].onGround = false;
+			robots[i].onGround = false; //zmienic na true zeby zobaczyc dzialanie.
 		}
 		else
 		{
