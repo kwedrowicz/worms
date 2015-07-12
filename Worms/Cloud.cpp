@@ -16,6 +16,7 @@ void Cloud::Draw(glm::mat4 &V)
 	if (positionX > 20) positionX = -20;
 	float ambient[4] = { 1, 1, 1, 1 };
 	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient);
+	glDisable(GL_TEXTURE_2D);
 	//glColor3d(0.5f, 0.95f, 0.75f);
 	glColor3d(0.65f, 1.0f, 1.0f);
 	M = mat4(1.0f);
@@ -23,6 +24,7 @@ void Cloud::Draw(glm::mat4 &V)
 	M = scale(M, vec3(scaleX, 1, 1));
 	glLoadMatrixf(value_ptr(V*M));
 	glutSolidSphere(radius, 20, 20);
+	glEnable(GL_TEXTURE_2D);
 }
 
 /*GLfloat shininess = 0.5f;
