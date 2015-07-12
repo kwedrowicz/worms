@@ -33,8 +33,8 @@ namespace settings{
 }
 
 
-int hardcodeiterator = 0;
-
+int someiterator = 0;
+bool tnij = 0;
 
 float speed = 0; //60 stopni/s
 int lastTime = 0;
@@ -92,13 +92,20 @@ void nextFrame(void) {
 		Model body = robots[i].body;
 		body.boundingBox = body.boundingBox * robots[i].body.M2;
 		float distance = wall.HowFarFromSurface(vec4((body.boundingBox.bottomLeft.x + body.boundingBox.bottomRight.x) / 2.0f, body.boundingBox.bottomRight.y, 0.0f, 0.0f));
-		hardcodeiterator++;
-		if (hardcodeiterator<50){  //warunek i zmienna do wyrzucenia po rozwiazaniu problemu
+		/*if (tnij){
+			wall.BlowCylinder(vec4((body.boundingBox.bottomLeft.x + body.boundingBox.bottomRight.x) / 2.0f, body.boundingBox.bottomRight.y, 0.0f, 0.0f),10);
+			tnij = 0;
+		}*/
+
+		someiterator++;
+		/*if (someiterator<50){  //warunek i zmienna do wyrzucenia po rozwiazaniu problemu
 			cout << distance << endl;
-		}
+		}*/
 		if (distance > 0.0f)
 		{
-			robots[i].onGround = false; //zmienic na true zeby zobaczyc dzialanie.
+			if (someiterator > 20){
+				robots[i].onGround = false;
+			}
 		}
 		else
 		{
@@ -163,6 +170,7 @@ void keyDown2(unsigned char c, int x, int y)
 	}
 	else if (c == 'q' && !robots[active].isShooting)
 	{
+		tnij = 1;
 		robots[active].Shot();
 		PlaySound(TEXT("shooting_sound.wav"),NULL, SND_ASYNC);
 	}
@@ -450,7 +458,8 @@ int main (int argc, char** argv) {
 	wall.LetTheEarthPutForth();
 	wall.M = scale(wall.M, vec3(0.1, 0.1, 0.1));
 	wall.M = translate(wall.M, vec3(0, -60, 0));
-	wall.CreateMesh(0,0,0);
+	wall.CreateMesh(0, 0, 0);
+	wall.CreateMesh(0, 0, 0);
 
 	initializeGLUT(&argc, argv);
 	initializeGLEW();

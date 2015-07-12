@@ -13,7 +13,7 @@ class Wall
 public:
 	void Draw(mat4 &V);
 	void BlowSphree(float x, float y, float radius);
-	void BlowCylinder(float x, float y, float radius);
+	void BlowCylinder(vec4 &myPosition, float radius);
 	int FetchMeshVertexIndex(int cubex, int cubey, int cubez, int vx, int vy, int vz);
 	void MeshPushSide(int cubex, int cubey, int cubez, int side);
 	void CreateMesh(int xdir, int ydir, int zdir);

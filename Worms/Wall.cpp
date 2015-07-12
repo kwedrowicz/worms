@@ -242,8 +242,16 @@ void Wall::Draw(mat4 &V)
 }
 */
 
-void Wall::BlowCylinder(float x, float y, float r)
+void Wall::BlowCylinder(vec4 &myPosition, float r)
 {
+	vec4 pos = myPosition;
+	mat4 invM = inverse(M);
+	//cout << "pos before mult:" << pos.x<<" " << pos.y<<" " << pos.z << "\n";
+	pos = invM * pos;
+	int x = roundd(pos.x) + xnum / 2.0f;
+	int y = roundd(pos.y) + ynum / 2.0f + 60;
+
+
 	int istart = -1 * r;
 	int jstart = -1 * r;
 	int newi;
@@ -251,8 +259,8 @@ void Wall::BlowCylinder(float x, float y, float r)
 	for (int i = istart; i < r; i++){
 		for (int j = jstart; j < r; j++){
 			if (sqrt(pow(i, 2) + pow(j, 2)) < r){
-				newi = i + xnum / 2 +x;
-				newj = j + ynum / 2 + y;
+				newi = i  + x;
+				newj = j  + y;
 				if (newi>=0 && newi<xnum && newj>=0 && newj < ynum){
 					for (int k = 0; k < znum; k++){
 						cubes[newi][newj][k].broken = 1;
@@ -265,6 +273,7 @@ void Wall::BlowCylinder(float x, float y, float r)
 			}
 		}
 	}
+	CreateMesh(0, 0, 0);
 }
 
 //searches if the vertex was already indexed, if not indexes it; vx etc - direction of verticle
@@ -419,6 +428,15 @@ void Wall::CreateMesh(int xdir, int ydir, int zdir){
 	meshNormals.clear();
 	meshVertices.clear();
 
+	for (int i = 0; i < xnum; i++){
+		for (int j = 0; j < ynum; j++){
+			for (int k = 0; k < znum; k++){
+				for (int n = 0; n < 8; n++){
+					cubes[i][j][k].vindex[n] = -1;
+				}
+			}
+		}
+	}
 
 	for (int i = 0; i<xnum; i++){
 		for (int j = 0; j<ynum; j++){
