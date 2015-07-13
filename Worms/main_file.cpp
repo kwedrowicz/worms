@@ -59,8 +59,7 @@ void displayFrame(void) {
 	glClearColor(0, 0.55f, 0.65f, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	float lpos[4] = { 1, 1, -1, 0 };
-    glLightfv(GL_LIGHT0, GL_POSITION, lpos);
+
 
 	mat4 P = perspective(1.5f, 1.0f, 1.0f, 50.0f);
 	mat4 V = lookAt(vec3(0.0f, 0.0f, -15.0f), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
@@ -78,7 +77,28 @@ void displayFrame(void) {
 	{
 		clouds[i].Draw(V);
 	}
+	if (robots[active].isAdjustingMissileSpeed)
+	{
+		mat4 M = mat4(1.0f);
+		float scaleY = (GetTickCount() - timePressed) / 2000.0f;
+		if (scaleY>1) scaleY = 1;
+		M = translate(M, vec3(-8.0f, 6.0f + scaleY, -5.0f));
+		M = scale(M, vec3(0.15, scaleY, 0.1f));	
+		glLoadMatrixf(value_ptr(V*M));
+		glDisable(GL_TEXTURE_2D);
+		glDisable(GL_LIGHTING);
+		glColor3d(scaleY, (1.0f-scaleY), 0);
+		glutSolidCube(2);
+		glEnable(GL_TEXTURE_2D);
+		glEnable(GL_LIGHTING);
+		glColor3d(1,1,1);
+
+	} 
 	//missile.Draw(V,robots[0].M);
+	mat4 M = mat4(1.0f);
+	glLoadMatrixf(value_ptr(V*M));
+	float lpos[4] = { 1, 1, -1, 0 };
+	glLightfv(GL_LIGHT0, GL_POSITION, lpos);
 	glutSwapBuffers();
 }
 
@@ -139,6 +159,7 @@ void nextFrame(void) {
 	{
 		clouds[i].positionX += clouds[i].speed * interval/1000.0;
 	} 
+	
 	//clouds[0].positionX += 0.1;
 	glutPostRedisplay();
 }
