@@ -292,9 +292,9 @@ void Wall::BlowCylinder(vec4 &myPosition, float r)
 	starty = floor((y - r) / 12.0);
 	if (starty < 0) starty = 0;
 	endx = ceil((x + r) / 12.0);
-	if (endx >= xnum/12) endx=xnum/12-1;
+	if (endx > xnum/12) endx=xnum/12;
 	endy = ceil((y + r) / 12.0);
-	if (endy >= ynum / 12) endy = ynum / 12 - 1;
+	if (endy > ynum / 12) endy = ynum / 12;
 	for (int i = startx; i < endx; i++){
 		for (int j = starty; j < endy; j++){
 			CreateMesh(0, 0, 0, i, j);
