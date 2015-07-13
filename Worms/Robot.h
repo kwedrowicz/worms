@@ -24,7 +24,7 @@ public:
 	bool shootingRight = false;
 
 	void turnFaceSide();
-	void jump();
+	void jump(float distance);
 	void calculateGravity(int time);
 	void calculateShot(int time);
 	void Draw(glm::mat4 &view);

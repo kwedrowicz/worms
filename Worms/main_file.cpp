@@ -198,7 +198,12 @@ void keyDown(int c, int x, int y)
 	if (c == GLUT_KEY_UP)
 	{
 		if (robots[active].onGround)
-			robots[active].jump();
+		{	
+			Model body = robots[active].body;
+			body.boundingBox = body.boundingBox * robots[active].body.M2;
+			float distance = wall.HowFarFromSurface(vec4((body.boundingBox.bottomLeft.x + body.boundingBox.bottomRight.x) / 2.0f, body.boundingBox.bottomRight.y, 0.0f, 0.0f));
+			robots[active].jump(distance);
+		}
 	}
 	if (c == GLUT_KEY_F1)
 	{

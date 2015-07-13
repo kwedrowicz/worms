@@ -42,10 +42,11 @@ void Robot::turnFaceSide()
 	direction *= -1;
 }
 
-void Robot::jump()
+void Robot::jump(float distance)
 {
 	onGround = false;
 	verticalSpeed = 8.0f;
+	M = translate(M, vec3(0.0f, distance*(-1), 0.0f));
 	//M = translate(M, vec3(0.0f, verticalSpeed / 100.0f, 0.0f));
 }
 
