@@ -43,7 +43,7 @@ float scaleModifier = 0.3f;
 //Robot robot;
 //Robot robot2;
 //Wall wall(300, 120, 40);
-Wall wall(250, 100, 25);
+Wall wall(20, 8, 2);
 
 
 //hmury
@@ -493,8 +493,12 @@ int main (int argc, char** argv) {
 	wall.LetTheEarthPutForth();
 	wall.M = scale(wall.M, vec3(0.1, 0.1, 0.1));
 	wall.M = translate(wall.M, vec3(0, -70, 0));
-	wall.CreateMesh(0, 0, 0);
-	wall.CreateMesh(0, 0, 0);
+	for (int i = 0; i < wall.xnum / 12; i++){
+		for (int j = 0; j < wall.ynum / 12; j++){
+			wall.CreateMesh(0, 0, 0, i, j);
+		}
+	}
+	
 
 	initializeGLUT(&argc, argv);
 	initializeGLEW();

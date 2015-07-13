@@ -23,8 +23,6 @@ float roundd(float d)
 
 
 Wall::Wall(int sizex, int sizey, int sizez){
-	currVIndex = -1;
-	indicesNumber = 0;
 
 	for (int i = 0; i < 3; i++)
 	{
@@ -36,14 +34,14 @@ Wall::Wall(int sizex, int sizey, int sizez){
 	shininess = 0;
 
 	M = mat4(1);
-	xnum = sizex;
-	ynum = sizey;
-	znum = sizez;
-	for (int i = 0; i < sizex; i++){
+	xnum = sizex*12;
+	ynum = sizey*12;
+	znum = sizez*12;
+	for (int i = 0; i < xnum; i++){
 		cubes.push_back(std::vector < std::vector<Cube> >());
-		for (int j = 0; j < sizey; j++){
+		for (int j = 0; j < ynum; j++){
 			cubes[i].push_back(std::vector<Cube>());
-			for (int k = 0; k < sizez; k++){
+			for (int k = 0; k < znum; k++){
 				cubes[i][j].push_back(Cube());
 			}
 		}
@@ -53,7 +51,22 @@ Wall::Wall(int sizex, int sizey, int sizez){
 	int starty = -1 * ynum / 2;
 	int startz = -1 * znum / 2;
 
-	
+	for (int i = 0; i < sizex; i++){
+		meshVertices.push_back(std::vector < std::vector<float> >());
+		meshNormals.push_back(std::vector < std::vector<float> >());
+		meshColors.push_back(std::vector < std::vector<float> >());
+		meshIndices.push_back(std::vector < std::vector<int> >());
+		currVIndex.push_back(std::vector <int>());
+		indicesNumber.push_back(std::vector <int>());
+		for (int j = 0; j < sizey; j++){
+			meshVertices[i].push_back( std::vector<float>());
+			meshNormals[i].push_back(std::vector<float>());
+			meshIndices[i].push_back(std::vector<int>());
+			meshColors[i].push_back(std::vector<float>());
+			currVIndex[i].push_back(-1);
+			indicesNumber[i].push_back(0);
+		}
+	}
 }
 
 
@@ -273,11 +286,25 @@ void Wall::BlowCylinder(vec4 &myPosition, float r)
 			}
 		}
 	}
-	CreateMesh(0, 0, 0);
+	int startx, starty, endx, endy;
+	startx = floor((x - r) / 12.0);
+	if (startx < 0) startx = 0;
+	starty = floor((y - r) / 12.0);
+	if (starty < 0) starty = 0;
+	endx = ceil((x + r) / 12.0);
+	if (endx >= xnum/12) endx=xnum/12-1;
+	endy = ceil((y + r) / 12.0);
+	if (endy >= ynum / 12) endy = ynum / 12 - 1;
+	for (int i = startx; i < endx; i++){
+		for (int j = starty; j < endy; j++){
+			CreateMesh(0, 0, 0, i, j);
+		}
+	}
+	
 }
 
 //searches if the vertex was already indexed, if not indexes it; vx etc - direction of verticle
-int Wall::FetchMeshVertexIndex(int cubex, int cubey, int cubez, int vx, int vy, int vz){
+int Wall::FetchMeshVertexIndex(int cubex, int cubey, int cubez, int vx, int vy, int vz, int blockx, int blocky){
 	/*if (vx>0){
 	if (cubex+1<numx && cube[cubex+1][cubey][cubez].vertexIndex[vz*2+vy*4]>-1){
 	return cube[cubex+1][cubey][cubez].vertexIndex[vz*2+vy*4];
@@ -316,61 +343,61 @@ int Wall::FetchMeshVertexIndex(int cubex, int cubey, int cubez, int vx, int vy, 
 			}
 		}
 	}
-	currVIndex++;
-	cubes[cubex][cubey][cubez].vindex[vx + 2 * vz + 4 * vy] = currVIndex;
-	return -1 * (currVIndex + 1);
+	currVIndex[blockx][blocky]++;
+	cubes[cubex][cubey][cubez].vindex[vx + 2 * vz + 4 * vy] = currVIndex[blockx][blocky];
+	return -1 * (currVIndex[blockx][blocky] + 1);
 }
 
 
-void Wall::MeshPushSide(int cubex, int cubey, int cubez, int side){
+void Wall::MeshPushSide(int cubex, int cubey, int cubez, int side, int blockx, int blocky){
 	vector<int> V; //indeks w tablicy wierzcho³ków
 	vector<float> xV; //pozycje wierzcho³ka w szeœcianie
 	vector<float> yV;
 	vector<float> zV;
 	if (side == 0 || side == 1 || side == 3){
-		V.push_back(FetchMeshVertexIndex(cubex, cubey, cubez, 0, 1, 0));
+		V.push_back(FetchMeshVertexIndex(cubex, cubey, cubez, 0, 1, 0, blockx, blocky));
 		xV.push_back(-1);
 		yV.push_back(1);
 		zV.push_back(-1);
 	}
 	if (side == 0 || side == 3 || side == 4){
-		V.push_back(FetchMeshVertexIndex(cubex, cubey, cubez, 1, 1, 0));
+		V.push_back(FetchMeshVertexIndex(cubex, cubey, cubez, 1, 1, 0, blockx, blocky));
 		xV.push_back(1);
 		yV.push_back(1);
 		zV.push_back(-1);
 	}
 	if (side == 0 || side == 1 || side == 5){
-		V.push_back(FetchMeshVertexIndex(cubex, cubey, cubez, 0, 1, 1));
+		V.push_back(FetchMeshVertexIndex(cubex, cubey, cubez, 0, 1, 1, blockx, blocky));
 		xV.push_back(-1);
 		yV.push_back(1);
 		zV.push_back(1);
 	}
 	if (side == 0 || side == 4 || side == 5){
-		V.push_back(FetchMeshVertexIndex(cubex, cubey, cubez, 1, 1, 1));
+		V.push_back(FetchMeshVertexIndex(cubex, cubey, cubez, 1, 1, 1, blockx, blocky));
 		xV.push_back(1);
 		yV.push_back(1);
 		zV.push_back(1);
 	}
 	if (side == 2 || side == 1 || side == 3){
-		V.push_back(FetchMeshVertexIndex(cubex, cubey, cubez, 0, 0, 0));
+		V.push_back(FetchMeshVertexIndex(cubex, cubey, cubez, 0, 0, 0, blockx, blocky));
 		xV.push_back(-1);
 		yV.push_back(-1);
 		zV.push_back(-1);
 	}
 	if (side == 2 || side == 3 || side == 4){
-		V.push_back(FetchMeshVertexIndex(cubex, cubey, cubez, 1, 0, 0));
+		V.push_back(FetchMeshVertexIndex(cubex, cubey, cubez, 1, 0, 0, blockx, blocky));
 		xV.push_back(1);
 		yV.push_back(-1);
 		zV.push_back(-1);
 	}
 	if (side == 2 || side == 1 || side == 5){
-		V.push_back(FetchMeshVertexIndex(cubex, cubey, cubez, 0, 0, 1));
+		V.push_back(FetchMeshVertexIndex(cubex, cubey, cubez, 0, 0, 1, blockx, blocky));
 		xV.push_back(-1);
 		yV.push_back(-1);
 		zV.push_back(1);
 	}
 	if (side == 2 || side == 4 || side == 5){
-		V.push_back(FetchMeshVertexIndex(cubex, cubey, cubez, 1, 0, 1));
+		V.push_back(FetchMeshVertexIndex(cubex, cubey, cubez, 1, 0, 1, blockx, blocky));
 		xV.push_back(1);
 		yV.push_back(-1);
 		zV.push_back(1);
@@ -378,37 +405,37 @@ void Wall::MeshPushSide(int cubex, int cubey, int cubez, int side){
 
 	for (int i = 0; i<4; i++){
 		if (V[i]<0){
-			meshVertices.push_back(cubex + xV[i] / 2.0f - xnum / 2.0f);
-			meshVertices.push_back(cubey + yV[i] / 2.0f - ynum / 2.0f);
-			meshVertices.push_back(cubez + zV[i] / 2.0f - znum / 2.0f);
-			meshNormals.push_back(xV[i]);
-			meshNormals.push_back(yV[i]);
-			meshNormals.push_back(zV[i]);
-			meshColors.push_back(materials[cubes[cubex][cubey][cubez].material].r);
-			meshColors.push_back(materials[cubes[cubex][cubey][cubez].material].g);
-			meshColors.push_back(materials[cubes[cubex][cubey][cubez].material].b);
+			meshVertices[blockx][blocky].push_back(cubex + xV[i] / 2.0f - xnum / 2.0f);
+			meshVertices[blockx][blocky].push_back(cubey + yV[i] / 2.0f - ynum / 2.0f);
+			meshVertices[blockx][blocky].push_back(cubez + zV[i] / 2.0f - znum / 2.0f);
+			meshNormals[blockx][blocky].push_back(xV[i]);
+			meshNormals[blockx][blocky].push_back(yV[i]);
+			meshNormals[blockx][blocky].push_back(zV[i]);
+			meshColors[blockx][blocky].push_back(materials[cubes[cubex][cubey][cubez].material].r);
+			meshColors[blockx][blocky].push_back(materials[cubes[cubex][cubey][cubez].material].g);
+			meshColors[blockx][blocky].push_back(materials[cubes[cubex][cubey][cubez].material].b);
 			V[i] = -1 * (V[i] + 1);
 			
 		}
 		else{
 			
-			meshNormals[V[i]*3] += xV[i];
-			meshNormals[V[i]*3+1] += yV[i];
-			meshNormals[V[i]*3+2] += zV[i];
-			meshColors[V[i]*3] += materials[cubes[cubex][cubey][cubez].material].r;
-			meshColors[V[i]*3+1] += materials[cubes[cubex][cubey][cubez].material].g;
-			meshColors[V[i]*3+2] += materials[cubes[cubex][cubey][cubez].material].b;
+			meshNormals[blockx][blocky][V[i] * 3] += xV[i];
+			meshNormals[blockx][blocky][V[i] * 3 + 1] += yV[i];
+			meshNormals[blockx][blocky][V[i] * 3 + 2] += zV[i];
+			meshColors[blockx][blocky][V[i] * 3] += materials[cubes[cubex][cubey][cubez].material].r;
+			meshColors[blockx][blocky][V[i] * 3 + 1] += materials[cubes[cubex][cubey][cubez].material].g;
+			meshColors[blockx][blocky][V[i] * 3 + 2] += materials[cubes[cubex][cubey][cubez].material].b;
 		}
 		//std::cout << V[i] << "; "<<cubex<<", " <<cubey <<", "<< cubez << endl;
 	}
 
-	meshIndices.push_back(V[3]);
-	meshIndices.push_back(V[1]);
-	meshIndices.push_back(V[0]);
-	meshIndices.push_back(V[0]);
-	meshIndices.push_back(V[2]);
-	meshIndices.push_back(V[3]);
-	indicesNumber += 6;
+	meshIndices[blockx][blocky].push_back(V[3]);
+	meshIndices[blockx][blocky].push_back(V[1]);
+	meshIndices[blockx][blocky].push_back(V[0]);
+	meshIndices[blockx][blocky].push_back(V[0]);
+	meshIndices[blockx][blocky].push_back(V[2]);
+	meshIndices[blockx][blocky].push_back(V[3]);
+	indicesNumber[blockx][blocky] += 6;
 	/*if (cubex > 0 && cubex<xnum - 1 && cubez == 0 && cubey>0 && cubey < ynum - 1){
 		for (int i = 0; i < 4; i++){
 			std::cout << meshNormals[V[i] * 3] << ", " << meshNormals[V[i] * 3 + 1] << ", " << meshNormals[V[i] * 3 + 2] << ", " << endl;
@@ -420,16 +447,47 @@ void Wall::MeshPushSide(int cubex, int cubey, int cubez, int side){
 
 
 //xdir ==0: rendering both left and right <0 rendering only left >0 rendering only right etc
-void Wall::CreateMesh(int xdir, int ydir, int zdir){
-	currVIndex = -1;
-	indicesNumber = 0;
-	meshIndices.clear();
-	meshColors.clear();
-	meshNormals.clear();
-	meshVertices.clear();
+void Wall::CreateMesh(int xdir, int ydir, int zdir, int blockx, int blocky){
+	currVIndex[blockx][blocky] = -1;
+	indicesNumber[blockx][blocky] = 0;
+	meshIndices[blockx][blocky].clear();
+	meshColors[blockx][blocky].clear();
+	meshNormals[blockx][blocky].clear();
+	meshVertices[blockx][blocky].clear();
 
-	for (int i = 0; i < xnum; i++){
-		for (int j = 0; j < ynum; j++){
+	meshIndices[blockx][blocky].reserve(9000);
+	meshColors[blockx][blocky].reserve(7000);
+	meshNormals[blockx][blocky].reserve(7000);
+	meshVertices[blockx][blocky].reserve(7000);
+
+	int startx, endx, starty, endy;
+	if (blockx==0){
+		startx = 0;
+	}
+	else{
+		startx = blockx * 12 - 1;
+	}
+	if (blocky == 0){
+		starty = 0;
+	}
+	else{
+		starty = blocky * 12 - 1;
+	}
+	if (blockx == xnum/12-1){
+		endx = xnum-1;
+	}
+	else{
+		endx = blockx * 12 + 13;
+	}
+	if (blocky == ynum / 12 - 1){
+		endy = ynum - 1;
+	}
+	else{
+		endy = blocky * 12 + 13;
+	}
+
+	for (int i = startx; i < endx; i++){
+		for (int j = starty; j < endy; j++){
 			for (int k = 0; k < znum; k++){
 				for (int n = 0; n < 8; n++){
 					cubes[i][j][k].vindex[n] = -1;
@@ -438,61 +496,70 @@ void Wall::CreateMesh(int xdir, int ydir, int zdir){
 		}
 	}
 
-	for (int i = 0; i<xnum; i++){
-		for (int j = 0; j<ynum; j++){
+	for (int i = blockx * 12; i<blockx * 12 + 12; i++){
+		for (int j = blocky * 12; j<blocky * 12 + 12; j++){
 			for (int k = 0; k<znum; k++){
 				if (cubes[i][j][k].visible && !cubes[i][j][k].broken){
 					//cout << i << " " << j << " " << k << " " << endl;
 					if (xdir <= 0 && (i - 1<0 || cubes[i - 1][j][k].broken)){
-						MeshPushSide(i, j, k, 1);
+						MeshPushSide(i, j, k, 1, blockx, blocky);
 					}
 					if (xdir >= 0 && (i + 1 >= xnum || cubes[i + 1][j][k].broken)){
-						MeshPushSide(i, j, k, 4);
+						MeshPushSide(i, j, k, 4, blockx, blocky);
 					}
 					if (ydir <= 0 && (j - 1<0 || cubes[i][j - 1][k].broken)){
-						MeshPushSide(i, j, k, 2);
+						MeshPushSide(i, j, k, 2, blockx, blocky);
 					}
 					if (ydir >= 0 && (j + 1 >= ynum || cubes[i][j + 1][k].broken)){
-						MeshPushSide(i, j, k, 0);
+						MeshPushSide(i, j, k, 0, blockx, blocky);
 					}
 					if (zdir <= 0 && (k - 1<0 || cubes[i][j][k - 1].broken)){
-						MeshPushSide(i, j, k, 3);
+						MeshPushSide(i, j, k, 3, blockx, blocky);
 					}
 					if (zdir >= 0 && (k + 1 >= znum || cubes[i][j][k + 1].broken)){
-						MeshPushSide(i, j, k, 5);
+						MeshPushSide(i, j, k, 5, blockx, blocky);
 					}
 				}
 			}
 		}
 	}
-	for (int i = 0; i < meshColors.size(); i++){
-		meshColors[i] /= 4;
+	for (int i = 0; i < meshColors[blockx][blocky].size(); i++){
+		meshColors[blockx][blocky][i] /= 4;
 	}
-	//cout << indicesNumber << endl;
+	std::cout << blockx << "; " << blocky << endl;
+	std::cout << meshIndices[blockx][blocky].size() << endl;
+	std::cout << meshVertices[blockx][blocky].size() << endl;
+	std::cout << meshNormals[blockx][blocky].size() << endl;
+	std::cout << meshColors[blockx][blocky].size() << endl;
 }
 
 
 void Wall::DrawMesh(mat4 &V){
+	for (int i = 0; i < xnum / 12; i++){
+		for (int j = 0; j < ynum / 12; j++){
+			if (meshVertices[i][j].size()>0){
+				glEnableClientState(GL_VERTEX_ARRAY);
+				glEnableClientState(GL_COLOR_ARRAY);
+				glEnableClientState(GL_NORMAL_ARRAY);
 
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
-	glEnableClientState(GL_NORMAL_ARRAY);
-
-	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
+				glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
+				glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient);
+				glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse);
+				glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
 
 
-	glVertexPointer(3, GL_FLOAT, 0, &meshVertices[0]);
-	glColorPointer(3, GL_FLOAT, 0, &meshColors[0]);
-	glNormalPointer(GL_FLOAT, 0, &meshNormals[0]);
-	glLoadMatrixf(value_ptr(V*M));
+				glVertexPointer(3, GL_FLOAT, 0, &meshVertices[i][j][0]);
+				glColorPointer(3, GL_FLOAT, 0, &meshColors[i][j][0]);
+				glNormalPointer(GL_FLOAT, 0, &meshNormals[i][j][0]);
+				glLoadMatrixf(value_ptr(V*M));
 
-	glDrawElements(GL_TRIANGLES, indicesNumber, GL_UNSIGNED_INT, &meshIndices[0]);
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_COLOR_ARRAY);
-	glDisableClientState(GL_NORMAL_ARRAY);
+				glDrawElements(GL_TRIANGLES, indicesNumber[i][j], GL_UNSIGNED_INT, &meshIndices[i][j][0]);
+				glDisableClientState(GL_VERTEX_ARRAY);
+				glDisableClientState(GL_COLOR_ARRAY);
+				glDisableClientState(GL_NORMAL_ARRAY);
+			}
+		}
+	}
 
 }
 
