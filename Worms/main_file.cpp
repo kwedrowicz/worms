@@ -108,7 +108,15 @@ void nextFrame(void) {
 	int actTime = glutGet(GLUT_ELAPSED_TIME);
 	int interval = actTime - lastTime;
 	lastTime = actTime;
-	robots[active].M = translate(robots[active].M, vec3(speed*interval*robots[active].direction / 2000.0f, 0.0f, 0.0f));
+	
+	//kolizje boczne
+	Model body = robots[active].body;
+	glm::mat4 test = translate(robots[active].M, vec3(speed*interval*robots[active].direction / 2000.0f, 0.0f, 0.0f));
+	test = test * robots[active].body.M;
+	body.boundingBox = body.boundingBox * test;
+	float distance = wall.HowFarFromSurface(vec4(body.boundingBox.bottomRight.x, (body.boundingBox.bottomRight.y+body.boundingBox.topRight.y)/2.0f, 0.0f, 0.0f));
+	if (distance > 0.0f)
+		robots[active].M = translate(robots[active].M, vec3(speed*interval*robots[active].direction / 2000.0f, 0.0f, 0.0f));
 	robots[active].ball.M = rotate(robots[active].ball.M,-1*robots[active].direction * speed/60, vec3(0.0, 0.0, 1.0));
 	for (int i = 0; i < robots.size(); i++)
 	{
