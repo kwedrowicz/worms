@@ -7,6 +7,7 @@ public:
 	bool isTurnRight = false;
 	bool onGround = true;
 	bool isShooting = false;
+	bool isAdjustingMissileSpeed = false;
 	int  direction = 1;
 	float altitude = 0.0f;
 	float verticalSpeed = 0.0f;
@@ -26,9 +27,9 @@ public:
 	void turnFaceSide();
 	void jump(float distance);
 	void calculateGravity(int time);
-	void calculateShot(int time);
+	void calculateShot(int time, float windspeed);
 	void Draw(glm::mat4 &view);
-	void Shot();
+	void Shot(unsigned int power);
 
 	Robot();
 	~Robot();

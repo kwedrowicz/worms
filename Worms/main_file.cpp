@@ -38,26 +38,28 @@ bool tnij = 0;
 
 float speed = 0; //60 stopni/s
 int lastTime = 0;
+DWORD timePressed; // do liczenia sily strzalu
 float scaleModifier = 0.3f;
-Robot robot;
-Robot robot2;
+//Robot robot;
+//Robot robot2;
 //Wall wall(300, 120, 40);
 Wall wall(250, 100, 25);
 
 
 //hmury
 vector<Cloud> clouds;
+float windSpeed = 0;
 const int cloudCount = 10;
 
 vector<Robot> robots;
 int active = 0;
 
+
 void displayFrame(void) {
 	glClearColor(0, 0.55f, 0.65f, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	float lpos[4] = { 1, 1, -1, 0 };
-    glLightfv(GL_LIGHT0, GL_POSITION, lpos);
+
 
 	mat4 P = perspective(1.5f, 1.0f, 1.0f, 50.0f);
 	mat4 V = lookAt(vec3(0.0f, 0.0f, -15.0f), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
@@ -75,7 +77,28 @@ void displayFrame(void) {
 	{
 		clouds[i].Draw(V);
 	}
+	if (robots[active].isAdjustingMissileSpeed)
+	{
+		mat4 M = mat4(1.0f);
+		float scaleY = (GetTickCount() - timePressed) / 2000.0f;
+		if (scaleY>1) scaleY = 1;
+		M = translate(M, vec3(-8.0f, 6.0f + scaleY, -5.0f));
+		M = scale(M, vec3(0.15, scaleY, 0.1f));	
+		glLoadMatrixf(value_ptr(V*M));
+		glDisable(GL_TEXTURE_2D);
+		glDisable(GL_LIGHTING);
+		glColor3d(scaleY, (1.0f-scaleY), 0);
+		glutSolidCube(2);
+		glEnable(GL_TEXTURE_2D);
+		glEnable(GL_LIGHTING);
+		glColor3d(1,1,1);
+
+	} 
 	//missile.Draw(V,robots[0].M);
+	mat4 M = mat4(1.0f);
+	glLoadMatrixf(value_ptr(V*M));
+	float lpos[4] = { 1, 1, -1, 0 };
+	glLightfv(GL_LIGHT0, GL_POSITION, lpos);
 	glutSwapBuffers();
 }
 
@@ -119,7 +142,7 @@ void nextFrame(void) {
 		}
 		if (robots[i].isShooting)
 		{
-			robots[i].calculateShot(interval);
+			robots[i].calculateShot(interval, windSpeed);
 			if (calculateCollisions())
 			{
 				robots[i].missileFlyTime = 0;
@@ -136,6 +159,7 @@ void nextFrame(void) {
 	{
 		clouds[i].positionX += clouds[i].speed * interval/1000.0;
 	} 
+	
 	//clouds[0].positionX += 0.1;
 	glutPostRedisplay();
 }
@@ -169,11 +193,13 @@ void keyDown2(unsigned char c, int x, int y)
 		robots[active].right_arm.M = translate(robots[active].right_arm.M, vec3(0, -0.94638f - 1.89f,0));
 
 	}
-	else if (c == 'q' && !robots[active].isShooting)
+	else if (c == 'q' && !robots[active].isShooting && !robots[active].isAdjustingMissileSpeed)
 	{
-		tnij = 1;
-		robots[active].Shot();
-		PlaySound(TEXT("shooting_sound.wav"),NULL, SND_ASYNC);
+		timePressed = GetTickCount();
+		robots[active].isAdjustingMissileSpeed = true;
+		//tnij = 1;
+		//robots[active].Shot();
+		//PlaySound(TEXT("shooting_sound.wav"),NULL, SND_ASYNC);
 	}
 	else if (c == 'w')
 	{
@@ -237,6 +263,17 @@ void keyUp(int c, int x, int y)
 	}
 }
 
+void keyUp2(unsigned char c, int x, int y)
+{
+	if (c == 'q' && !robots[active].isShooting && robots[active].isAdjustingMissileSpeed)
+	{
+		tnij = 1;
+		unsigned int pressTime = GetTickCount() - timePressed;
+		robots[active].Shot(pressTime);
+		robots[active].isAdjustingMissileSpeed = false;
+		//PlaySound(TEXT("shooting_sound.wav"),NULL, SND_ASYNC);
+	}
+}
 bool initTextures()
 {
 	glEnable(GL_TEXTURE_2D);
@@ -343,20 +380,6 @@ bool boxesCrossing(Model & a1, Model & b1)
 	a.boundingBox = a.boundingBox * a.M2;
 	b.boundingBox = b.boundingBox * b.M2;
 
-	cout << a.boundingBox.topLeft.x << " " << a.boundingBox.topLeft.y << endl;
-	cout << a.boundingBox.topRight.x << " " << a.boundingBox.topRight.y << endl;
-	cout << a.boundingBox.bottomRight.x << " " << a.boundingBox.bottomRight.y << endl;
-	cout << a.boundingBox.bottomLeft.x << " " << a.boundingBox.bottomLeft.y << endl;
-
-	cout << endl << endl;
-
-	cout << b.boundingBox.topLeft.x << " " << b.boundingBox.topLeft.y << endl;
-	cout << b.boundingBox.topRight.x << " " << b.boundingBox.topRight.y << endl;
-	cout << b.boundingBox.bottomRight.x << " " << b.boundingBox.bottomRight.y << endl;
-	cout << b.boundingBox.bottomLeft.x << " " << b.boundingBox.bottomLeft.y << endl;
-
-	//system("pause");
-
 	boxes_axis Axis[4];
 	Axis[0].x = a.boundingBox.topRight.x - a.boundingBox.topLeft.x;
 	Axis[0].y = a.boundingBox.topRight.y - a.boundingBox.topLeft.y;
@@ -443,7 +466,6 @@ bool calculateCollisions()
 {
 	for (int i = 0; i < robots.size(); i++)
 	{
-		cout << i << endl;
 		if (i == active)
 			continue;
 		/*if (doOverlap(robots[active].missile, robots[i].body))
@@ -472,6 +494,7 @@ int main (int argc, char** argv) {
 	//Kod inicjuj¹cy tutaj
 	glutIdleFunc(nextFrame);
 	glutKeyboardFunc(keyDown2);
+	glutKeyboardUpFunc(keyUp2);
 	glutPassiveMotionFunc(mousePassive);
 	glutSpecialFunc(keyDown);
 	glutSpecialUpFunc(keyUp);
@@ -480,8 +503,9 @@ int main (int argc, char** argv) {
 	for (int i = 0; i < cloudCount; i++)
 	{
 		clouds.push_back(Cloud());
+		windSpeed += clouds[i].cloudSpeed;
 	}
-
+	windSpeed = windSpeed / cloudCount;
 	robots.push_back(Robot());
 	robots.push_back(Robot());
 
