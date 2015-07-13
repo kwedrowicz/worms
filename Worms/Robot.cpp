@@ -151,13 +151,13 @@ void Robot::Shot()
 	isShooting = true;
 }
 
-void Robot::calculateShot(int time)
+void Robot::calculateShot(int time, float windSpeed)
 {
 	if (missileFlyTime < 2500)
 	{
 		//cout << "Kat: " << arm_angle * 180 / M_PI << endl;
 		//system("pause");
-		horizontalSpeed = cos(arm_angle)*missile_speed;
+		horizontalSpeed = cos(arm_angle)*missile_speed + windSpeed;
 		//cout << "Hor: " << horizontalSpeed << endl;
 		verticalSpeed = sin(arm_angle)*missile_speed;
 		//cout << "Ver: " << verticalSpeed << endl;

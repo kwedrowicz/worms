@@ -26,7 +26,7 @@ public:
 	void turnFaceSide();
 	void jump();
 	void calculateGravity(int time);
-	void calculateShot(int time);
+	void calculateShot(int time, float windspeed);
 	void Draw(glm::mat4 &view);
 	void Shot();
 

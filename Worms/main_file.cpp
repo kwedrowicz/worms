@@ -47,6 +47,7 @@ Wall wall(250, 100, 25);
 
 //hmury
 vector<Cloud> clouds;
+float windSpeed = 0;
 const int cloudCount = 10;
 
 vector<Robot> robots;
@@ -119,7 +120,7 @@ void nextFrame(void) {
 		}
 		if (robots[i].isShooting)
 		{
-			robots[i].calculateShot(interval);
+			robots[i].calculateShot(interval, windSpeed);
 			if (calculateCollisions())
 			{
 				robots[i].missileFlyTime = 0;
@@ -173,7 +174,7 @@ void keyDown2(unsigned char c, int x, int y)
 	{
 		tnij = 1;
 		robots[active].Shot();
-		PlaySound(TEXT("shooting_sound.wav"),NULL, SND_ASYNC);
+		//PlaySound(TEXT("shooting_sound.wav"),NULL, SND_ASYNC);
 	}
 	else if (c == 'w')
 	{
@@ -475,8 +476,9 @@ int main (int argc, char** argv) {
 	for (int i = 0; i < cloudCount; i++)
 	{
 		clouds.push_back(Cloud());
+		windSpeed += clouds[i].cloudSpeed;
 	}
-
+	windSpeed = windSpeed / cloudCount;
 	robots.push_back(Robot());
 	robots.push_back(Robot());
 
