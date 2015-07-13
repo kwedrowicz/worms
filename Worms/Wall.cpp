@@ -249,7 +249,7 @@ void Wall::BlowCylinder(vec4 &myPosition, float r)
 	//cout << "pos before mult:" << pos.x<<" " << pos.y<<" " << pos.z << "\n";
 	pos = invM * pos;
 	int x = roundd(pos.x) + xnum / 2.0f;
-	int y = roundd(pos.y) + ynum / 2.0f + 60;
+	int y = roundd(pos.y) + ynum / 2.0f + 68;
 
 
 	int istart = -1 * r;

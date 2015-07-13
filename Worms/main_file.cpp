@@ -129,9 +129,6 @@ void nextFrame(void) {
 		}*/
 
 		someiterator++;
-		if (someiterator<300){  //warunek i zmienna do wyrzucenia po rozwiazaniu problemu
-			cout << distance << endl;
-		}
 		
 		if (distance > 0.0f)
 		{
@@ -151,7 +148,8 @@ void nextFrame(void) {
 		if (robots[i].isShooting)
 		{
 			robots[i].calculateShot(interval, windSpeed);
-			if (calculateCollisions())
+			boundingRectangle missile = robots[i].missile.boundingBox * robots[i].missile.M2;
+			if (calculateCollisions() || wall.HowFarFromSurface(vec4((missile.bottomLeft.x + missile.bottomRight.x) / 2.0f, missile.bottomRight.y, 0.0f, 0.0f))<0)
 			{
 				robots[i].missileFlyTime = 0;
 				robots[i].missile.M = mat4(1.0);
@@ -159,6 +157,7 @@ void nextFrame(void) {
 				robots[i].missileY = 0;
 				robots[i].arm_angle = robots[i].rememberAngle;
 				robots[i].isShooting = false;
+				wall.BlowCylinder(vec4((missile.bottomLeft.x + missile.bottomRight.x) / 2.0f, missile.bottomRight.y, 0.0f, 0.0f),10);
 			}
 		}
 	} 
