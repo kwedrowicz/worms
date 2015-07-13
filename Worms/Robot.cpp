@@ -122,10 +122,14 @@ void Robot::Draw(mat4 &view)
 	}
 }
 
-void Robot::Shot()
+void Robot::Shot(unsigned int power)
 {
 //	missile.M = mat4(1.0);
-	missile_speed = 10.0f;
+	//cout << power << endl;
+	if (power > 2000) power = 2000;
+	//cout << power << endl << endl;
+	missile_speed = 20.0f * power/2000.0;
+	
 	rememberAngle = arm_angle;
 	vec4 startPoint = vec4(missile_translate_x, missile_translate_y, 0.0f, 1.0f);
 	mat4 M2 = mat4(1.0f);
@@ -157,7 +161,7 @@ void Robot::calculateShot(int time, float windSpeed)
 	{
 		//cout << "Kat: " << arm_angle * 180 / M_PI << endl;
 		//system("pause");
-		horizontalSpeed = cos(arm_angle)*missile_speed + windSpeed;
+		horizontalSpeed = cos(arm_angle)*missile_speed + windSpeed/2;
 		//cout << "Hor: " << horizontalSpeed << endl;
 		verticalSpeed = sin(arm_angle)*missile_speed;
 		//cout << "Ver: " << verticalSpeed << endl;

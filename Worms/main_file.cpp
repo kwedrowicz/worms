@@ -38,9 +38,10 @@ bool tnij = 0;
 
 float speed = 0; //60 stopni/s
 int lastTime = 0;
+DWORD timePressed; // do liczenia sily strzalu
 float scaleModifier = 0.3f;
-Robot robot;
-Robot robot2;
+//Robot robot;
+//Robot robot2;
 //Wall wall(300, 120, 40);
 Wall wall(250, 100, 25);
 
@@ -52,6 +53,7 @@ const int cloudCount = 10;
 
 vector<Robot> robots;
 int active = 0;
+
 
 void displayFrame(void) {
 	glClearColor(0, 0.55f, 0.65f, 1);
@@ -170,10 +172,12 @@ void keyDown2(unsigned char c, int x, int y)
 		robots[active].right_arm.M = translate(robots[active].right_arm.M, vec3(0, -0.94638f - 1.89f,0));
 
 	}
-	else if (c == 'q' && !robots[active].isShooting)
+	else if (c == 'q' && !robots[active].isShooting && !robots[active].isAdjustingMissileSpeed)
 	{
-		tnij = 1;
-		robots[active].Shot();
+		timePressed = GetTickCount();
+		robots[active].isAdjustingMissileSpeed = true;
+		//tnij = 1;
+		//robots[active].Shot();
 		//PlaySound(TEXT("shooting_sound.wav"),NULL, SND_ASYNC);
 	}
 	else if (c == 'w')
@@ -233,6 +237,17 @@ void keyUp(int c, int x, int y)
 	}
 }
 
+void keyUp2(unsigned char c, int x, int y)
+{
+	if (c == 'q' && !robots[active].isShooting && robots[active].isAdjustingMissileSpeed)
+	{
+		tnij = 1;
+		unsigned int pressTime = GetTickCount() - timePressed;
+		robots[active].Shot(pressTime);
+		robots[active].isAdjustingMissileSpeed = false;
+		//PlaySound(TEXT("shooting_sound.wav"),NULL, SND_ASYNC);
+	}
+}
 bool initTextures()
 {
 	glEnable(GL_TEXTURE_2D);
@@ -339,20 +354,6 @@ bool boxesCrossing(Model & a1, Model & b1)
 	a.boundingBox = a.boundingBox * a.M2;
 	b.boundingBox = b.boundingBox * b.M2;
 
-	cout << a.boundingBox.topLeft.x << " " << a.boundingBox.topLeft.y << endl;
-	cout << a.boundingBox.topRight.x << " " << a.boundingBox.topRight.y << endl;
-	cout << a.boundingBox.bottomRight.x << " " << a.boundingBox.bottomRight.y << endl;
-	cout << a.boundingBox.bottomLeft.x << " " << a.boundingBox.bottomLeft.y << endl;
-
-	cout << endl << endl;
-
-	cout << b.boundingBox.topLeft.x << " " << b.boundingBox.topLeft.y << endl;
-	cout << b.boundingBox.topRight.x << " " << b.boundingBox.topRight.y << endl;
-	cout << b.boundingBox.bottomRight.x << " " << b.boundingBox.bottomRight.y << endl;
-	cout << b.boundingBox.bottomLeft.x << " " << b.boundingBox.bottomLeft.y << endl;
-
-	//system("pause");
-
 	boxes_axis Axis[4];
 	Axis[0].x = a.boundingBox.topRight.x - a.boundingBox.topLeft.x;
 	Axis[0].y = a.boundingBox.topRight.y - a.boundingBox.topLeft.y;
@@ -439,7 +440,6 @@ bool calculateCollisions()
 {
 	for (int i = 0; i < robots.size(); i++)
 	{
-		cout << i << endl;
 		if (i == active)
 			continue;
 		/*if (doOverlap(robots[active].missile, robots[i].body))
@@ -468,6 +468,7 @@ int main (int argc, char** argv) {
 	//Kod inicjuj¹cy tutaj
 	glutIdleFunc(nextFrame);
 	glutKeyboardFunc(keyDown2);
+	glutKeyboardUpFunc(keyUp2);
 	glutPassiveMotionFunc(mousePassive);
 	glutSpecialFunc(keyDown);
 	glutSpecialUpFunc(keyUp);
