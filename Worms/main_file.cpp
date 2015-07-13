@@ -98,9 +98,10 @@ void nextFrame(void) {
 		}*/
 
 		someiterator++;
-		/*if (someiterator<50){  //warunek i zmienna do wyrzucenia po rozwiazaniu problemu
+		if (someiterator<300){  //warunek i zmienna do wyrzucenia po rozwiazaniu problemu
 			cout << distance << endl;
-		}*/
+		}
+		
 		if (distance > 0.0f)
 		{
 			if (someiterator > 20){
@@ -457,7 +458,7 @@ int main (int argc, char** argv) {
 	
 	wall.LetTheEarthPutForth();
 	wall.M = scale(wall.M, vec3(0.1, 0.1, 0.1));
-	wall.M = translate(wall.M, vec3(0, -60, 0));
+	wall.M = translate(wall.M, vec3(0, -70, 0));
 	wall.CreateMesh(0, 0, 0);
 	wall.CreateMesh(0, 0, 0);
 
