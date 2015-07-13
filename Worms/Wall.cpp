@@ -502,7 +502,7 @@ float Wall::HowFarFromSurface(vec4 &myPosition){
 	//cout << "pos before mult:" << pos.x<<" " << pos.y<<" " << pos.z << "\n";
 	pos = invM * pos;
 	
-	float yyy = pos.y + (int)(ynum)/2.0f;
+	float yyy = pos.y + (int)(ynum/2.0f)+60;
 	int x = roundd(pos.x) + xnum/2.0f;
 	int y = roundd(pos.y) + ynum/2.0f +60;
 	int z = roundd(pos.z) + znum/2.0f;
@@ -517,15 +517,15 @@ float Wall::HowFarFromSurface(vec4 &myPosition){
 		if (!cubes[x][y][z].broken){
 			for (int i = y; i < ynum; i++){
 				if (cubes[x][i][z].broken){
-					return y - i;
+					return y - i + yover -1;
 				}
 			}
-			return y -ynum;
+			return y - ynum + yover - 1;
 		}
 		else {
 			for (int i = y; i >= 0; i--){
 				if (!cubes[x][i][z].broken){
-					return y - i;
+					return y - i + yover -1;
 				}
 			}
 			return 100000;
