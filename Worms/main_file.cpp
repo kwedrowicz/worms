@@ -164,7 +164,8 @@ void nextFrame(void) {
 
 	for (int i = 0; i < robots.size(); i++)
 	{
-		if (robots[i].currentHealth <= 0)
+		boundingRectangle abc = robots[i].ball.boundingBox * robots[i].ball.M2;
+		if (robots[i].currentHealth <= 0  ||  abc.bottomLeft.y < -13.0f)
 		{
 			robots.erase(robots.begin() + i);
 	//		robots.push_back(Robot());
@@ -255,6 +256,14 @@ void keyDown(int c, int x, int y)
 	if (c == GLUT_KEY_F2)
 	{
 		robots.push_back(Robot());
+		robots[robots.size() - 1].body.tex_handle = robots[0].body.tex_handle;
+		robots[robots.size() - 1].ball.tex_handle = robots[0].ball.tex_handle;
+		robots[robots.size() - 1].left_arm.tex_handle = robots[0].left_arm.tex_handle;
+		robots[robots.size() - 1].right_arm.tex_handle = robots[0].right_arm.tex_handle;
+		robots[robots.size() - 1].eyes.tex_handle = robots[0].eyes.tex_handle;
+		robots[robots.size() - 1].missile.tex_handle = robots[0].missile.tex_handle;
+		//robots[robots.size() - 1].M = scale(robots[robots.size() - 1].M, vec3(0.2f, 0.2f, 0.2f));
+		robots[robots.size() - 1].M = robots[active].M;
 	}
 }
 
@@ -537,7 +546,6 @@ int main (int argc, char** argv) {
 	windSpeed = windSpeed / cloudCount;
 	robots.push_back(Robot());
 	robots.push_back(Robot());
-
 	for (int i = 0; i < robots.size(); i++)
 	{
 		robots[i].M = scale(robots[i].M, vec3(0.2f, 0.2f, 0.2f));
@@ -547,8 +555,8 @@ int main (int argc, char** argv) {
 
 	glEnable(GL_NORMALIZE);
 	glEnable(GL_LIGHTING);
-	float lpos[4] = { 1, 1, -1, 0 };
-	glLightfv(GL_LIGHT0, GL_POSITION, lpos);
+	//float lpos[4] = { 1, 1, -1, 0 };
+	//glLightfv(GL_LIGHT0, GL_POSITION, lpos);
 	glEnable(GL_LIGHT0);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_COLOR_MATERIAL);
