@@ -116,7 +116,7 @@ bool Roll(float probability){
 
 
 void Wall::LetThereBeDome(){
-	materials.push_back(Material(1, 1, 1));//mat 0 cloud
+	materials.push_back(Material(0.7,0.9,1));//mat 0 cloud
 	int xmax = xnum / 3;
 	int xmin = xnum / 9;
 	int ymax = ynum / 3;
@@ -147,11 +147,11 @@ void Wall::LetThereBeDome(){
 
 
 void Wall::LetTheEarthPutForth(){
-	materials.push_back(Material(0, 1.35, 0));//mat 0 grass
-	materials.push_back(Material(1.2, 0.6, 0));//mat 1 dirt
-	materials.push_back(Material(0.6, 1.0, 1));//mat 2 stone
-	materials.push_back(Material(1, 1.4, 0.8));//mat 3 wood
-	materials.push_back(Material(0.6, 3, 0.6));//mat 4 leaf
+	materials.push_back(Material(0, 0.5, 0));//mat 0 grass
+	materials.push_back(Material(0.6, 0.3, 0));//mat 1 something
+	materials.push_back(Material(0.3, 0.15, 0.1));//mat 2 dirt
+	materials.push_back(Material(0.7, 0.4, 0.2));//mat 3 wood
+	materials.push_back(Material(0.1, 0.4, 0.1));//mat 4 leaf
 
 	int NStartingPoints=10;
 	int StartingPointsReach = ynum / 10;
@@ -567,6 +567,7 @@ void Wall::CreateMesh(int xdir, int ydir, int zdir, int blockx, int blocky){
 
 
 void Wall::DrawMesh(mat4 &V){
+	glDisable(GL_TEXTURE_2D);
 	for (int i = 0; i < xnum / sectorsize; i++){
 		for (int j = 0; j < ynum / sectorsize; j++){
 			if (meshVertices[i][j].size()>0){
@@ -585,6 +586,7 @@ void Wall::DrawMesh(mat4 &V){
 				glNormalPointer(GL_FLOAT, 0, &meshNormals[i][j][0]);
 				glLoadMatrixf(value_ptr(V*M));
 
+				
 				glDrawElements(GL_TRIANGLES, indicesNumber[i][j], GL_UNSIGNED_INT, &meshIndices[i][j][0]);
 				glDisableClientState(GL_VERTEX_ARRAY);
 				glDisableClientState(GL_COLOR_ARRAY);
@@ -592,6 +594,7 @@ void Wall::DrawMesh(mat4 &V){
 			}
 		}
 	}
+	glEnable(GL_TEXTURE_2D);
 
 }
 

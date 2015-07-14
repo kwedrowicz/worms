@@ -44,6 +44,7 @@ float scaleModifier = 0.3f;
 //Robot robot2;
 //Wall wall(300, 120, 40);
 Wall wall(16, 16, 6, 1);
+//Wall cloud(16, 4, 2, 2);
 
 vector<GLuint> texHandles;
 
@@ -66,7 +67,7 @@ void displayFrame(void) {
 	glMatrixMode(GL_PROJECTION);
 	glLoadMatrixf(value_ptr(P));
 	glMatrixMode(GL_MODELVIEW);
-
+	cloud.DrawMesh(V);
 	wall.DrawMesh(V);
 	for (int i = 0; i < robots.size(); i++)
 	{
@@ -539,7 +540,17 @@ int main (int argc, char** argv) {
 			wall.CreateMesh(0, 0, 0, i, j);
 		}
 	}
-	
+
+	/*
+	cloud.LetThereBeDome();
+	cloud.M = scale(cloud.M, vec3(0.1, 0.1, 0.1));
+	cloud.M = translate(cloud.M, vec3(0, 70, 0));
+	for (int i = 0; i < cloud.xnum / cloud.sectorsize; i++){
+		for (int j = 0; j < cloud.ynum / cloud.sectorsize; j++){
+			cloud.CreateMesh(0, 0, 0, i, j);
+		}
+	}*/
+
 
 	initializeGLUT(&argc, argv);
 	initializeGLEW();
