@@ -121,6 +121,29 @@ void Robot::Draw(mat4 &view)
 		missile.M2 = M*right_arm.M*missile.M;
 		missile.Draw(view, M*right_arm.M);
 	}
+
+	//pasek rzycia
+	mat4 MM = mat4(1.0f); // pasek zielony
+	mat4 MM2 = mat4(1.0f); //pasek czerwony
+	float scaleX = currentHealth / 100.0f;
+	MM = translate(MM, vec3(0, 5.0f, 0));
+	MM = scale(MM, vec3(scaleX, 0.15f, 0.1f));
+	MM = M * MM;
+	if (isTurnRight) MM2 = translate(MM2, vec3(0, 5.0f, -0.01f));
+	else MM2 = translate(MM2, vec3(0, 5.0f, 0.01f));
+	MM2 = scale(MM2, vec3(1, 0.14f, 0.1f));
+	MM2 = M * MM2;
+	glLoadMatrixf(value_ptr(view*MM));
+	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_LIGHTING);
+	glColor3d(0, 1.0f, 0);
+	glutSolidCube(4);
+	glLoadMatrixf(value_ptr(view*MM2));
+	glColor3d(1.0f, 0, 0);
+	glutSolidCube(4);
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_LIGHTING);
+	glColor3d(1, 1, 1);
 }
 
 void Robot::Shot(unsigned int power)
@@ -158,7 +181,7 @@ void Robot::Shot(unsigned int power)
 
 void Robot::calculateShot(int time, float windSpeed)
 {
-	if (missileFlyTime < 2500)
+	if (missileFlyTime < 5000)
 	{
 		//cout << "Kat: " << arm_angle * 180 / M_PI << endl;
 		//system("pause");

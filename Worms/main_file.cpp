@@ -480,9 +480,15 @@ bool calculateCollisions()
 		if (doOverlap(robots[active].missile, robots[i].ball))
 			return true;*/
 		if (boxesCrossing(robots[active].missile, robots[i].body))
+		{
+			robots[i].currentHealth -= 25;
 			return true;
+		}
 		if (boxesCrossing(robots[active].missile, robots[i].ball))
+		{
+			robots[i].currentHealth -= 15;
 			return true;
+		}
 	}
 	return false;
 }
