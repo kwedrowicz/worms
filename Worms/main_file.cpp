@@ -45,6 +45,7 @@ float scaleModifier = 0.3f;
 //Wall wall(300, 120, 40);
 Wall wall(16, 16, 6, 1);
 
+vector<GLuint> texHandles;
 
 //hmury
 vector<Cloud> clouds;
@@ -58,7 +59,6 @@ int active = 0;
 void displayFrame(void) {
 	glClearColor(0, 0.55f, 0.65f, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 
 
 	mat4 P = perspective(1.5f, 1.0f, 1.0f, 50.0f);
@@ -103,6 +103,7 @@ void displayFrame(void) {
 }
 
 bool calculateCollisions();
+void SpawnRobot();
 
 void nextFrame(void) {
 	int actTime = glutGet(GLUT_ELAPSED_TIME);
@@ -168,7 +169,7 @@ void nextFrame(void) {
 		if (robots[i].currentHealth <= 0  ||  abc.bottomLeft.y < -13.0f)
 		{
 			robots.erase(robots.begin() + i);
-	//		robots.push_back(Robot());
+			SpawnRobot();
 		}
 	} 
 	for (int i = 0; i < clouds.size(); i++)
@@ -255,15 +256,22 @@ void keyDown(int c, int x, int y)
 	}
 	if (c == GLUT_KEY_F2)
 	{
+		SpawnRobot();
+	}
+}
+
+void SpawnRobot()
+{
+	if (robots.size() != 0)
+	{
 		robots.push_back(Robot());
-		robots[robots.size() - 1].body.tex_handle = robots[0].body.tex_handle;
-		robots[robots.size() - 1].ball.tex_handle = robots[0].ball.tex_handle;
-		robots[robots.size() - 1].left_arm.tex_handle = robots[0].left_arm.tex_handle;
-		robots[robots.size() - 1].right_arm.tex_handle = robots[0].right_arm.tex_handle;
-		robots[robots.size() - 1].eyes.tex_handle = robots[0].eyes.tex_handle;
-		robots[robots.size() - 1].missile.tex_handle = robots[0].missile.tex_handle;
-		//robots[robots.size() - 1].M = scale(robots[robots.size() - 1].M, vec3(0.2f, 0.2f, 0.2f));
-		robots[robots.size() - 1].M = robots[active].M;
+		robots[robots.size() - 1].body.tex_handle = texHandles[0];
+		robots[robots.size() - 1].ball.tex_handle = texHandles[0];
+		robots[robots.size() - 1].left_arm.tex_handle = texHandles[0];
+		robots[robots.size() - 1].right_arm.tex_handle = texHandles[0];
+		robots[robots.size() - 1].eyes.tex_handle = texHandles[1];
+		robots[robots.size() - 1].missile.tex_handle = texHandles[2];
+		robots[robots.size() - 1].M = robots[0].M;
 	}
 }
 
@@ -359,7 +367,7 @@ bool initTextures()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-
+	texHandles.push_back(body); texHandles.push_back(eyes); texHandles.push_back(tmissile);
 	for (int i = 0; i < robots.size(); i++)
 	{
 		robots[i].body.tex_handle = body;
