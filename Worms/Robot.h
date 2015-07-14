@@ -20,8 +20,8 @@ public:
 
 	int missileFlyTime = 0;
 	float missileX = 0, missileY = 0; //current position
-	const float missile_translate_y = 0.77206f; //position in model world
-	const float missile_translate_x = 0.0f;
+	float missile_translate_y = 0.77206f; //position in model world
+	float missile_translate_x = 0.0f;
 	float rememberAngle;
 	bool shootingRight = false;
 

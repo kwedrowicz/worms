@@ -185,7 +185,8 @@ void Robot::calculateShot(int time, float windSpeed)
 	{
 		//cout << "Kat: " << arm_angle * 180 / M_PI << endl;
 		//system("pause");
-		horizontalSpeed = cos(arm_angle)*missile_speed + windSpeed/2;
+		if(!isTurnRight) horizontalSpeed = cos(arm_angle)*missile_speed + windSpeed/2;
+		else horizontalSpeed = cos(arm_angle)*missile_speed - windSpeed / 2;
 		//cout << "Hor: " << horizontalSpeed << endl;
 		verticalSpeed = sin(arm_angle)*missile_speed;
 		//cout << "Ver: " << verticalSpeed << endl;

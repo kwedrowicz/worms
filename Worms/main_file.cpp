@@ -161,7 +161,15 @@ void nextFrame(void) {
 			}
 		}
 	} 
-	
+
+	for (int i = 0; i < robots.size(); i++)
+	{
+		if (robots[i].currentHealth <= 0)
+		{
+			robots.erase(robots.begin() + i);
+	//		robots.push_back(Robot());
+		}
+	} 
 	for (int i = 0; i < clouds.size(); i++)
 	{
 		clouds[i].positionX += clouds[i].speed * interval/1000.0;
@@ -243,6 +251,10 @@ void keyDown(int c, int x, int y)
 		active++;
 		if (active >= robots.size())
 			active = active % robots.size();
+	}
+	if (c == GLUT_KEY_F2)
+	{
+		robots.push_back(Robot());
 	}
 }
 
