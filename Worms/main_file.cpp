@@ -43,7 +43,7 @@ float scaleModifier = 0.3f;
 //Robot robot;
 //Robot robot2;
 //Wall wall(300, 120, 40);
-Wall wall(20, 8, 2);
+Wall wall(16, 16, 6, 1);
 
 
 //hmury
@@ -157,7 +157,7 @@ void nextFrame(void) {
 				robots[i].missileY = 0;
 				robots[i].arm_angle = robots[i].rememberAngle;
 				robots[i].isShooting = false;
-				wall.BlowCylinder(vec4((missile.bottomLeft.x + missile.bottomRight.x) / 2.0f, missile.bottomRight.y, 0.0f, 0.0f),10);
+				wall.BlowCylinder(vec4((missile.bottomLeft.x + missile.bottomRight.x) / 2.0f, missile.bottomRight.y, 0.0f, 0.0f),8);
 			}
 		}
 	} 
@@ -493,8 +493,8 @@ int main (int argc, char** argv) {
 	wall.LetTheEarthPutForth();
 	wall.M = scale(wall.M, vec3(0.1, 0.1, 0.1));
 	wall.M = translate(wall.M, vec3(0, -70, 0));
-	for (int i = 0; i < wall.xnum / 12; i++){
-		for (int j = 0; j < wall.ynum / 12; j++){
+	for (int i = 0; i < wall.xnum / wall.sectorsize; i++){
+		for (int j = 0; j < wall.ynum / wall.sectorsize; j++){
 			wall.CreateMesh(0, 0, 0, i, j);
 		}
 	}

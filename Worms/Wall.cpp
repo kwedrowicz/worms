@@ -22,8 +22,8 @@ float roundd(float d)
 }
 
 
-Wall::Wall(int sizex, int sizey, int sizez){
-
+Wall::Wall(int sectorsizein, int sizex, int sizey, int sizez){
+	sectorsize = sectorsizein;
 	for (int i = 0; i < 3; i++)
 	{
 		ambient[i] = 0.2;
@@ -34,9 +34,9 @@ Wall::Wall(int sizex, int sizey, int sizez){
 	shininess = 0;
 
 	M = mat4(1);
-	xnum = sizex*12;
-	ynum = sizey*12;
-	znum = sizez*12;
+	xnum = sizex*sectorsize;
+	ynum = sizey*sectorsize;
+	znum = sizez*sectorsize;
 	for (int i = 0; i < xnum; i++){
 		cubes.push_back(std::vector < std::vector<Cube> >());
 		for (int j = 0; j < ynum; j++){
@@ -287,14 +287,14 @@ void Wall::BlowCylinder(vec4 &myPosition, float r)
 		}
 	}
 	int startx, starty, endx, endy;
-	startx = floor((x - r) / 12.0);
+	startx = floor((x - r) / (float)sectorsize);
 	if (startx < 0) startx = 0;
-	starty = floor((y - r) / 12.0);
+	starty = floor((y - r) / (float)sectorsize);
 	if (starty < 0) starty = 0;
-	endx = ceil((x + r) / 12.0);
-	if (endx > xnum/12) endx=xnum/12;
-	endy = ceil((y + r) / 12.0);
-	if (endy > ynum / 12) endy = ynum / 12;
+	endx = ceil((x + r) / (float)sectorsize);
+	if (endx > xnum / 12) endx = xnum / sectorsize;
+	endy = ceil((y + r) / (float)sectorsize);
+	if (endy > ynum / 12) endy = ynum / sectorsize;
 	for (int i = startx; i < endx; i++){
 		for (int j = starty; j < endy; j++){
 			CreateMesh(0, 0, 0, i, j);
@@ -304,7 +304,7 @@ void Wall::BlowCylinder(vec4 &myPosition, float r)
 }
 
 //searches if the vertex was already indexed, if not indexes it; vx etc - direction of verticle
-int Wall::FetchMeshVertexIndex(int cubex, int cubey, int cubez, int vx, int vy, int vz, int blockx, int blocky){
+int Wall::FetchMeshVertexIndex(bool justnormals, int cubex, int cubey, int cubez, int vx, int vy, int vz, int blockx, int blocky){
 	/*if (vx>0){
 	if (cubex+1<numx && cube[cubex+1][cubey][cubez].vertexIndex[vz*2+vy*4]>-1){
 	return cube[cubex+1][cubey][cubez].vertexIndex[vz*2+vy*4];
@@ -343,61 +343,64 @@ int Wall::FetchMeshVertexIndex(int cubex, int cubey, int cubez, int vx, int vy, 
 			}
 		}
 	}
-	currVIndex[blockx][blocky]++;
-	cubes[cubex][cubey][cubez].vindex[vx + 2 * vz + 4 * vy] = currVIndex[blockx][blocky];
-	return -1 * (currVIndex[blockx][blocky] + 1);
+	if (!justnormals){
+		currVIndex[blockx][blocky]++;
+		cubes[cubex][cubey][cubez].vindex[vx + 2 * vz + 4 * vy] = currVIndex[blockx][blocky];
+		return -1 * (currVIndex[blockx][blocky] + 1);
+	}
+	else return -1;
 }
 
 
-void Wall::MeshPushSide(int cubex, int cubey, int cubez, int side, int blockx, int blocky){
+void Wall::MeshPushSide(bool justnormals, int cubex, int cubey, int cubez, int side, int blockx, int blocky){
 	vector<int> V; //indeks w tablicy wierzcho³ków
 	vector<float> xV; //pozycje wierzcho³ka w szeœcianie
 	vector<float> yV;
 	vector<float> zV;
 	if (side == 0 || side == 1 || side == 3){
-		V.push_back(FetchMeshVertexIndex(cubex, cubey, cubez, 0, 1, 0, blockx, blocky));
+		V.push_back(FetchMeshVertexIndex(justnormals, cubex, cubey, cubez, 0, 1, 0, blockx, blocky));
 		xV.push_back(-1);
 		yV.push_back(1);
 		zV.push_back(-1);
 	}
 	if (side == 0 || side == 3 || side == 4){
-		V.push_back(FetchMeshVertexIndex(cubex, cubey, cubez, 1, 1, 0, blockx, blocky));
+		V.push_back(FetchMeshVertexIndex(justnormals, cubex, cubey, cubez, 1, 1, 0, blockx, blocky));
 		xV.push_back(1);
 		yV.push_back(1);
 		zV.push_back(-1);
 	}
 	if (side == 0 || side == 1 || side == 5){
-		V.push_back(FetchMeshVertexIndex(cubex, cubey, cubez, 0, 1, 1, blockx, blocky));
+		V.push_back(FetchMeshVertexIndex(justnormals, cubex, cubey, cubez, 0, 1, 1, blockx, blocky));
 		xV.push_back(-1);
 		yV.push_back(1);
 		zV.push_back(1);
 	}
 	if (side == 0 || side == 4 || side == 5){
-		V.push_back(FetchMeshVertexIndex(cubex, cubey, cubez, 1, 1, 1, blockx, blocky));
+		V.push_back(FetchMeshVertexIndex(justnormals, cubex, cubey, cubez, 1, 1, 1, blockx, blocky));
 		xV.push_back(1);
 		yV.push_back(1);
 		zV.push_back(1);
 	}
 	if (side == 2 || side == 1 || side == 3){
-		V.push_back(FetchMeshVertexIndex(cubex, cubey, cubez, 0, 0, 0, blockx, blocky));
+		V.push_back(FetchMeshVertexIndex(justnormals, cubex, cubey, cubez, 0, 0, 0, blockx, blocky));
 		xV.push_back(-1);
 		yV.push_back(-1);
 		zV.push_back(-1);
 	}
 	if (side == 2 || side == 3 || side == 4){
-		V.push_back(FetchMeshVertexIndex(cubex, cubey, cubez, 1, 0, 0, blockx, blocky));
+		V.push_back(FetchMeshVertexIndex(justnormals, cubex, cubey, cubez, 1, 0, 0, blockx, blocky));
 		xV.push_back(1);
 		yV.push_back(-1);
 		zV.push_back(-1);
 	}
 	if (side == 2 || side == 1 || side == 5){
-		V.push_back(FetchMeshVertexIndex(cubex, cubey, cubez, 0, 0, 1, blockx, blocky));
+		V.push_back(FetchMeshVertexIndex(justnormals, cubex, cubey, cubez, 0, 0, 1, blockx, blocky));
 		xV.push_back(-1);
 		yV.push_back(-1);
 		zV.push_back(1);
 	}
 	if (side == 2 || side == 4 || side == 5){
-		V.push_back(FetchMeshVertexIndex(cubex, cubey, cubez, 1, 0, 1, blockx, blocky));
+		V.push_back(FetchMeshVertexIndex(justnormals, cubex, cubey, cubez, 1, 0, 1, blockx, blocky));
 		xV.push_back(1);
 		yV.push_back(-1);
 		zV.push_back(1);
@@ -405,16 +408,18 @@ void Wall::MeshPushSide(int cubex, int cubey, int cubez, int side, int blockx, i
 
 	for (int i = 0; i<4; i++){
 		if (V[i]<0){
-			meshVertices[blockx][blocky].push_back(cubex + xV[i] / 2.0f - xnum / 2.0f);
-			meshVertices[blockx][blocky].push_back(cubey + yV[i] / 2.0f - ynum / 2.0f);
-			meshVertices[blockx][blocky].push_back(cubez + zV[i] / 2.0f - znum / 2.0f);
-			meshNormals[blockx][blocky].push_back(xV[i]);
-			meshNormals[blockx][blocky].push_back(yV[i]);
-			meshNormals[blockx][blocky].push_back(zV[i]);
-			meshColors[blockx][blocky].push_back(materials[cubes[cubex][cubey][cubez].material].r);
-			meshColors[blockx][blocky].push_back(materials[cubes[cubex][cubey][cubez].material].g);
-			meshColors[blockx][blocky].push_back(materials[cubes[cubex][cubey][cubez].material].b);
-			V[i] = -1 * (V[i] + 1);
+			if (!justnormals){
+				meshVertices[blockx][blocky].push_back(cubex + xV[i] / 2.0f - xnum / 2.0f);
+				meshVertices[blockx][blocky].push_back(cubey + yV[i] / 2.0f - ynum / 2.0f);
+				meshVertices[blockx][blocky].push_back(cubez + zV[i] / 2.0f - znum / 2.0f);
+				meshNormals[blockx][blocky].push_back(xV[i]);
+				meshNormals[blockx][blocky].push_back(yV[i]);
+				meshNormals[blockx][blocky].push_back(zV[i]);
+				meshColors[blockx][blocky].push_back(materials[cubes[cubex][cubey][cubez].material].r);
+				meshColors[blockx][blocky].push_back(materials[cubes[cubex][cubey][cubez].material].g);
+				meshColors[blockx][blocky].push_back(materials[cubes[cubex][cubey][cubez].material].b);
+				V[i] = -1 * (V[i] + 1);
+			}
 			
 		}
 		else{
@@ -428,14 +433,15 @@ void Wall::MeshPushSide(int cubex, int cubey, int cubez, int side, int blockx, i
 		}
 		//std::cout << V[i] << "; "<<cubex<<", " <<cubey <<", "<< cubez << endl;
 	}
-
-	meshIndices[blockx][blocky].push_back(V[3]);
-	meshIndices[blockx][blocky].push_back(V[1]);
-	meshIndices[blockx][blocky].push_back(V[0]);
-	meshIndices[blockx][blocky].push_back(V[0]);
-	meshIndices[blockx][blocky].push_back(V[2]);
-	meshIndices[blockx][blocky].push_back(V[3]);
-	indicesNumber[blockx][blocky] += 6;
+	if (!justnormals){
+		meshIndices[blockx][blocky].push_back(V[3]);
+		meshIndices[blockx][blocky].push_back(V[1]);
+		meshIndices[blockx][blocky].push_back(V[0]);
+		meshIndices[blockx][blocky].push_back(V[0]);
+		meshIndices[blockx][blocky].push_back(V[2]);
+		meshIndices[blockx][blocky].push_back(V[3]);
+		indicesNumber[blockx][blocky] += 6;
+	}
 	/*if (cubex > 0 && cubex<xnum - 1 && cubez == 0 && cubey>0 && cubey < ynum - 1){
 		for (int i = 0; i < 4; i++){
 			std::cout << meshNormals[V[i] * 3] << ", " << meshNormals[V[i] * 3 + 1] << ", " << meshNormals[V[i] * 3 + 2] << ", " << endl;
@@ -455,36 +461,16 @@ void Wall::CreateMesh(int xdir, int ydir, int zdir, int blockx, int blocky){
 	meshNormals[blockx][blocky].clear();
 	meshVertices[blockx][blocky].clear();
 
-	meshIndices[blockx][blocky].reserve(9000);
-	meshColors[blockx][blocky].reserve(7000);
-	meshNormals[blockx][blocky].reserve(7000);
-	meshVertices[blockx][blocky].reserve(7000);
 
 	int startx, endx, starty, endy;
-	if (blockx==0){
-		startx = 0;
-	}
-	else{
-		startx = blockx * 12 - 1;
-	}
-	if (blocky == 0){
-		starty = 0;
-	}
-	else{
-		starty = blocky * 12 - 1;
-	}
-	if (blockx == xnum/12-1){
-		endx = xnum-1;
-	}
-	else{
-		endx = blockx * 12 + 13;
-	}
-	if (blocky == ynum / 12 - 1){
-		endy = ynum - 1;
-	}
-	else{
-		endy = blocky * 12 + 13;
-	}
+	startx = blockx * sectorsize - 2;
+	if (startx<0) startx = 0;
+	starty = blocky * sectorsize - 2;
+	if (starty<0) starty = 0;
+	endx = blockx * sectorsize + sectorsize + 2;
+	if (endx>xnum)endx = xnum;
+	endy = blocky * sectorsize + sectorsize + 2;
+	if (endy>ynum)endy = ynum;
 
 	for (int i = startx; i < endx; i++){
 		for (int j = starty; j < endy; j++){
@@ -496,28 +482,43 @@ void Wall::CreateMesh(int xdir, int ydir, int zdir, int blockx, int blocky){
 		}
 	}
 
-	for (int i = blockx * 12; i<blockx * 12 + 12; i++){
-		for (int j = blocky * 12; j<blocky * 12 + 12; j++){
+	startx = blockx * sectorsize - 1;
+	if (startx<0) startx = 0;
+	starty = blocky * sectorsize - 1;
+	if (starty<0) starty = 0;
+	endx = blockx * sectorsize + sectorsize + 1;
+	if (endx>xnum)endx = xnum;
+	endy = blocky * sectorsize + sectorsize + 1;
+	if (endy>ynum)endy = ynum;
+
+	for (int i = startx; i<endx; i++){
+		for (int j = starty; j<endy; j++){
 			for (int k = 0; k<znum; k++){
 				if (cubes[i][j][k].visible && !cubes[i][j][k].broken){
 					//cout << i << " " << j << " " << k << " " << endl;
 					if (xdir <= 0 && (i - 1<0 || cubes[i - 1][j][k].broken)){
-						MeshPushSide(i, j, k, 1, blockx, blocky);
+						if (i == blockx * sectorsize + sectorsize || j == blocky * sectorsize + sectorsize) MeshPushSide(1, i, j, k, 1, blockx, blocky);
+						else MeshPushSide(0, i, j, k, 1, blockx, blocky);
 					}
 					if (xdir >= 0 && (i + 1 >= xnum || cubes[i + 1][j][k].broken)){
-						MeshPushSide(i, j, k, 4, blockx, blocky);
+						if (i == blockx * sectorsize + sectorsize || j == blocky * sectorsize + sectorsize) MeshPushSide(1, i, j, k, 4, blockx, blocky);
+						else MeshPushSide(0, i, j, k, 4, blockx, blocky);
 					}
 					if (ydir <= 0 && (j - 1<0 || cubes[i][j - 1][k].broken)){
-						MeshPushSide(i, j, k, 2, blockx, blocky);
+						if (i == blockx * sectorsize + sectorsize || j == blocky * sectorsize + sectorsize) MeshPushSide(1, i, j, k, 2, blockx, blocky);
+						else MeshPushSide(0, i, j, k, 2, blockx, blocky);
 					}
 					if (ydir >= 0 && (j + 1 >= ynum || cubes[i][j + 1][k].broken)){
-						MeshPushSide(i, j, k, 0, blockx, blocky);
+						if (i == blockx * sectorsize + sectorsize || j == blocky * sectorsize + sectorsize) MeshPushSide(1, i, j, k, 0, blockx, blocky);
+						else MeshPushSide(0, i, j, k, 0, blockx, blocky);
 					}
 					if (zdir <= 0 && (k - 1<0 || cubes[i][j][k - 1].broken)){
-						MeshPushSide(i, j, k, 3, blockx, blocky);
+						if (i == blockx * sectorsize + sectorsize || j == blocky * sectorsize + sectorsize) MeshPushSide(1, i, j, k, 3, blockx, blocky);
+						else MeshPushSide(0, i, j, k, 3, blockx, blocky);
 					}
 					if (zdir >= 0 && (k + 1 >= znum || cubes[i][j][k + 1].broken)){
-						MeshPushSide(i, j, k, 5, blockx, blocky);
+						if (i == blockx * sectorsize + sectorsize || j == blocky * sectorsize + sectorsize) MeshPushSide(1, i, j, k, 5, blockx, blocky);
+						else MeshPushSide(0, i, j, k, 5, blockx, blocky);
 					}
 				}
 			}
@@ -535,8 +536,8 @@ void Wall::CreateMesh(int xdir, int ydir, int zdir, int blockx, int blocky){
 
 
 void Wall::DrawMesh(mat4 &V){
-	for (int i = 0; i < xnum / 12; i++){
-		for (int j = 0; j < ynum / 12; j++){
+	for (int i = 0; i < xnum / sectorsize; i++){
+		for (int j = 0; j < ynum / sectorsize; j++){
 			if (meshVertices[i][j].size()>0){
 				glEnableClientState(GL_VERTEX_ARRAY);
 				glEnableClientState(GL_COLOR_ARRAY);
