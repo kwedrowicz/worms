@@ -115,6 +115,37 @@ bool Roll(float probability){
 }
 
 
+void Wall::LetThereBeDome(){
+	materials.push_back(Material(1, 1, 1));//mat 0 cloud
+	int xmax = xnum / 3;
+	int xmin = xnum / 9;
+	int ymax = ynum / 3;
+	int zmax = znum / 3;
+	int ymin = ynum / 9;
+	int zmin = znum / 9;
+	int elipsoids = 6;
+	for (int o = 0; o < elipsoids; o++){
+		int xp = rand() % (xnum / 3) + xnum / 3;
+		int yp = rand() % (ynum / 3) + ynum / 3;
+		int zp = rand() % (znum / 3) + znum / 3;
+		int xrad = xmin + rand() % (xmax - xmin);
+		int yrad = ymin + rand() % (ymax - ymin);
+		int zrad = zmin + rand() % (zmax - zmin);
+
+		for (int i = xp-xrad; i < xp+xrad; i++){
+			for (int j = yp - yrad; j < yp + yrad; j++){
+				for (int k = zp - zrad; k < zp + zrad; k++){
+					if (pow(i - xp, 2)/pow(xrad,2) + pow(j - yp, 2)/pow(yrad,2) + pow(k-zp, 2)/pow(zrad,2) < 1){
+						AddCube(i, j, k, 0);
+					}
+				}
+			}
+		}
+	}
+
+}
+
+
 void Wall::LetTheEarthPutForth(){
 	materials.push_back(Material(0, 1.35, 0));//mat 0 grass
 	materials.push_back(Material(1.2, 0.6, 0));//mat 1 dirt

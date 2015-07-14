@@ -22,6 +22,7 @@ public:
 	void LetTheEarthPutForth();
 	void AddCube(int x, int y, int z, int mat);
 	float HowFarFromSurface(vec4 &myPosition);
+	void LetThereBeDome();
 
 	Wall(int sectorsizein, int sizex, int sizey, int sizez);
 	~Wall();
