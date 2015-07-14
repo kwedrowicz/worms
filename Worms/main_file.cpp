@@ -67,33 +67,34 @@ void displayFrame(void) {
 	glLoadMatrixf(value_ptr(P));
 	glMatrixMode(GL_MODELVIEW);
 
-
+	wall.DrawMesh(V);
 	for (int i = 0; i < robots.size(); i++)
 	{
-		robots[i].Draw(V);
-		wall.DrawMesh(V);
+		robots[i].Draw(V);	
+		//silomierz
+		if (robots[i].isAdjustingMissileSpeed)
+		{
+			mat4 M = mat4(1.0f);
+			float scaleY = (GetTickCount() - timePressed) / 2000.0f;
+			if (scaleY>1) scaleY = 1;
+			M = translate(M, vec3(-8.0f, 6.0f + scaleY, -5.0f));
+			M = scale(M, vec3(0.15, scaleY, 0.1f));
+			glLoadMatrixf(value_ptr(V*M));
+			glDisable(GL_TEXTURE_2D);
+			glDisable(GL_LIGHTING);
+			glColor3d(scaleY, (1.0f - scaleY), 0);
+			glutSolidCube(2);
+			glEnable(GL_TEXTURE_2D);
+			glEnable(GL_LIGHTING);
+			glColor3d(1, 1, 1);
+
+		}
 	}
 	for (int i = 0; i < clouds.size(); i++)
 	{
 		clouds[i].Draw(V);
 	}
-	if (robots[active].isAdjustingMissileSpeed)
-	{
-		mat4 M = mat4(1.0f);
-		float scaleY = (GetTickCount() - timePressed) / 2000.0f;
-		if (scaleY>1) scaleY = 1;
-		M = translate(M, vec3(-8.0f, 6.0f + scaleY, -5.0f));
-		M = scale(M, vec3(0.15, scaleY, 0.1f));	
-		glLoadMatrixf(value_ptr(V*M));
-		glDisable(GL_TEXTURE_2D);
-		glDisable(GL_LIGHTING);
-		glColor3d(scaleY, (1.0f-scaleY), 0);
-		glutSolidCube(2);
-		glEnable(GL_TEXTURE_2D);
-		glEnable(GL_LIGHTING);
-		glColor3d(1,1,1);
 
-	} 
 	//missile.Draw(V,robots[0].M);
 	mat4 M = mat4(1.0f);
 	glLoadMatrixf(value_ptr(V*M));
@@ -109,69 +110,71 @@ void nextFrame(void) {
 	int actTime = glutGet(GLUT_ELAPSED_TIME);
 	int interval = actTime - lastTime;
 	lastTime = actTime;
-	
-	//kolizje boczne
-	Model body = robots[active].body;
-	glm::mat4 test = translate(robots[active].M, vec3(speed*interval*robots[active].direction / 2000.0f, 0.0f, 0.0f));
-	test = test * robots[active].body.M;
-	body.boundingBox = body.boundingBox * test;
-	float distance = wall.HowFarFromSurface(vec4(body.boundingBox.bottomRight.x, (body.boundingBox.bottomRight.y+body.boundingBox.topRight.y)/2.0f, 0.0f, 0.0f));
-	if (distance > 0.0f)
-		robots[active].M = translate(robots[active].M, vec3(speed*interval*robots[active].direction / 2000.0f, 0.0f, 0.0f));
-	robots[active].ball.M = rotate(robots[active].ball.M,-1*robots[active].direction * speed/60, vec3(0.0, 0.0, 1.0));
-	for (int i = 0; i < robots.size(); i++)
+	if (active != -1)
 	{
-		Model body = robots[i].body;
-		body.boundingBox = body.boundingBox * robots[i].body.M2;
-		float distance = wall.HowFarFromSurface(vec4((body.boundingBox.bottomLeft.x + body.boundingBox.bottomRight.x) / 2.0f, body.boundingBox.bottomRight.y, 0.0f, 0.0f));
-		/*if (tnij){
-			wall.BlowCylinder(vec4((body.boundingBox.bottomLeft.x + body.boundingBox.bottomRight.x) / 2.0f, body.boundingBox.bottomRight.y, 0.0f, 0.0f),10);
-			tnij = 0;
-		}*/
-
-		someiterator++;
-		
+		//kolizje boczne
+		Model body = robots[active].body;
+		glm::mat4 test = translate(robots[active].M, vec3(speed*interval*robots[active].direction / 2000.0f, 0.0f, 0.0f));
+		test = test * robots[active].body.M;
+		body.boundingBox = body.boundingBox * test;
+		float distance = wall.HowFarFromSurface(vec4(body.boundingBox.bottomRight.x, (body.boundingBox.bottomRight.y + body.boundingBox.topRight.y) / 2.0f, 0.0f, 0.0f));
 		if (distance > 0.0f)
+			robots[active].M = translate(robots[active].M, vec3(speed*interval*robots[active].direction / 2000.0f, 0.0f, 0.0f));
+		robots[active].ball.M = rotate(robots[active].ball.M, -1 * robots[active].direction * speed / 60, vec3(0.0, 0.0, 1.0));
+		for (int i = 0; i < robots.size(); i++)
 		{
-			if (someiterator > 20){
-				robots[i].onGround = false;
-			}
-		}
-		else
-		{
-			robots[i].onGround = true;
-			robots[i].verticalSpeed = 0.0f;
-		}
-		if (!robots[i].onGround)
-		{
-			robots[i].calculateGravity(interval);
-		}
-		if (robots[i].isShooting)
-		{
-			robots[i].calculateShot(interval, windSpeed);
-			boundingRectangle missile = robots[i].missile.boundingBox * robots[i].missile.M2;
-			if (calculateCollisions() || wall.HowFarFromSurface(vec4((missile.bottomLeft.x + missile.bottomRight.x) / 2.0f, missile.bottomRight.y, 0.0f, 0.0f))<0)
-			{
-				robots[i].missileFlyTime = 0;
-				robots[i].missile.M = mat4(1.0);
-				robots[i].missileX = 0; 
-				robots[i].missileY = 0;
-				robots[i].arm_angle = robots[i].rememberAngle;
-				robots[i].isShooting = false;
-				wall.BlowCylinder(vec4((missile.bottomLeft.x + missile.bottomRight.x) / 2.0f, missile.bottomRight.y, 0.0f, 0.0f),8);
-			}
-		}
-	} 
+			Model body = robots[i].body;
+			body.boundingBox = body.boundingBox * robots[i].body.M2;
+			float distance = wall.HowFarFromSurface(vec4((body.boundingBox.bottomLeft.x + body.boundingBox.bottomRight.x) / 2.0f, body.boundingBox.bottomRight.y, 0.0f, 0.0f));
+			/*if (tnij){
+				wall.BlowCylinder(vec4((body.boundingBox.bottomLeft.x + body.boundingBox.bottomRight.x) / 2.0f, body.boundingBox.bottomRight.y, 0.0f, 0.0f),10);
+				tnij = 0;
+				}*/
 
-	for (int i = 0; i < robots.size(); i++)
-	{
-		boundingRectangle abc = robots[i].ball.boundingBox * robots[i].ball.M2;
-		if (robots[i].currentHealth <= 0  ||  abc.bottomLeft.y < -13.0f)
-		{
-			robots.erase(robots.begin() + i);
-			SpawnRobot();
+			someiterator++;
+
+			if (distance > 0.0f)
+			{
+				if (someiterator > 20){
+					robots[i].onGround = false;
+				}
+			}
+			else
+			{
+				robots[i].onGround = true;
+				robots[i].verticalSpeed = 0.0f;
+			}
+			if (!robots[i].onGround)
+			{
+				robots[i].calculateGravity(interval);
+			}
+			if (robots[i].isShooting)
+			{
+				robots[i].calculateShot(interval, windSpeed);
+				boundingRectangle missile = robots[i].missile.boundingBox * robots[i].missile.M2;
+				if (calculateCollisions() || wall.HowFarFromSurface(vec4((missile.bottomLeft.x + missile.bottomRight.x) / 2.0f, missile.bottomRight.y, 0.0f, 0.0f)) < 0)
+				{
+					robots[i].missileFlyTime = 0;
+					robots[i].missile.M = mat4(1.0);
+					robots[i].missileX = 0;
+					robots[i].missileY = 0;
+					robots[i].arm_angle = robots[i].rememberAngle;
+					robots[i].isShooting = false;
+					wall.BlowCylinder(vec4((missile.bottomLeft.x + missile.bottomRight.x) / 2.0f, missile.bottomRight.y, 0.0f, 0.0f), 8);
+				}
+			}
 		}
-	} 
+
+		for (int i = 0; i < robots.size(); i++)
+		{
+			boundingRectangle abc = robots[i].ball.boundingBox * robots[i].ball.M2;
+			if (robots[i].currentHealth <= 0 || abc.bottomLeft.y < -13.0f)
+			{
+				robots.erase(robots.begin() + i);
+				if (robots.size() == 0) active = -1;
+			}
+		}
+	}
 	for (int i = 0; i < clouds.size(); i++)
 	{
 		clouds[i].positionX += clouds[i].speed * interval/1000.0;
@@ -202,6 +205,7 @@ void initializeGLEW() {
 
 void keyDown2(unsigned char c, int x, int y)
 {
+	if (active == -1) return;
 	if (c == ' ')
 	{
 		robots[active].right_arm.M = translate(robots[active].right_arm.M, vec3(0, 0.94638f + 1.89f,0));
@@ -226,6 +230,7 @@ void keyDown2(unsigned char c, int x, int y)
 
 void keyDown(int c, int x, int y)
 {
+	if (active == -1) return;
 	if (c == GLUT_KEY_LEFT)
 	{
 		if (robots[active].isTurnRight)
@@ -277,6 +282,7 @@ void SpawnRobot()
 
 void mousePassive(int x, int y)
 {
+	if (active == -1) return;
 	if (!robots[active].isShooting)
 	{
 		float angle = atan2(settings::y_res / 2 - y, settings::x_res / 2 - x);
@@ -301,7 +307,7 @@ void keyUp(int c, int x, int y)
 
 void keyUp2(unsigned char c, int x, int y)
 {
-	if (c == 'q' && !robots[active].isShooting && robots[active].isAdjustingMissileSpeed)
+	if (active != -1 && c == 'q' && !robots[active].isShooting && robots[active].isAdjustingMissileSpeed)
 	{
 		tnij = 1;
 		unsigned int pressTime = GetTickCount() - timePressed;
