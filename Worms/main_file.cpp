@@ -171,8 +171,9 @@ void nextFrame(void) {
 			boundingRectangle abc = robots[i].ball.boundingBox * robots[i].ball.M2;
 			if (robots[i].currentHealth <= 0 || abc.bottomLeft.y < -13.0f)
 			{
-				robots.erase(robots.begin() + i);
+				robots.erase(robots.begin() + i);		
 				if (robots.size() == 0) active = -1;
+				else active = 0;
 			}
 		}
 	}
@@ -278,6 +279,7 @@ void SpawnRobot()
 		robots[robots.size() - 1].eyes.tex_handle = texHandles[1];
 		robots[robots.size() - 1].missile.tex_handle = texHandles[2];
 		robots[robots.size() - 1].M = robots[0].M;
+		if (robots[0].isTurnRight) robots[robots.size() - 1].M = rotate(robots[robots.size() - 1].M, radians(180.0f), vec3(0.0f, 1.0f, 0.0f));
 	}
 }
 
