@@ -8,7 +8,7 @@ Cloud::Cloud()
 	positionY = 3 + ((rand() % 300) / 100.0);  // od 3 do 6
 	positionX = ((rand() % 100) / 10.0) - 5;  // od -5 do 5
 	positionZ = ((rand() % 200) / 100.0) - 1;   // od 0 do 2
-	speed = (5 + (rand() % 40)) / 10.0;  // ???
+	speed = (5 + (rand() % 40)) / 10.0;  // ??? ???
 }
 
 void Cloud::Draw(glm::mat4 &V)

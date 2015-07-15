@@ -52,6 +52,8 @@ vector<GLuint> texHandles;
 vector<Cloud> clouds;
 float windSpeed = 0;
 const int cloudCount = 10;
+//vector<Wall *> cloudsos;
+//vector<int> speeds;
 
 vector<Robot> robots;
 int active = 0;
@@ -94,6 +96,7 @@ void displayFrame(void) {
 	for (int i = 0; i < clouds.size(); i++)
 	{
 		clouds[i].Draw(V);
+		//cloudsos[i]->DrawMesh(V);
 	}
 
 	//missile.Draw(V,robots[0].M);
@@ -132,6 +135,9 @@ void nextFrame(void) {
 				tnij = 0;
 				}*/
 
+			if (distance<-0.5){
+				robots[i].M = translate(robots[i].M, vec3(0, -distance, 0));
+			}
 			someiterator++;
 
 			if (distance > 0.0f)
@@ -178,7 +184,8 @@ void nextFrame(void) {
 	}
 	for (int i = 0; i < clouds.size(); i++)
 	{
-		clouds[i].positionX += clouds[i].speed * interval/1000.0;
+		clouds[i].positionX += clouds[i].speed * interval / 1000.0;
+		//cloudsos[i]->M = translate(cloudsos[i]->M, vec3(speeds[i]*interval/10000,0,0));
 	} 
 	
 	//clouds[0].positionX += 0.1;
@@ -567,6 +574,17 @@ int main (int argc, char** argv) {
 	{
 		clouds.push_back(Cloud());
 		windSpeed += clouds[i].cloudSpeed;
+		/*
+		Wall * huehue = new Wall(16, 2 + rand() % 3,1+rand()%2,1+rand()%2);
+		cloudsos.push_back(huehue);
+		cloudsos[i]->LetThereBeDome();
+		cloudsos[i]->M = scale(cloudsos[i]->M, vec3(0.1, 0.1, 0.1));
+		cloudsos[i]->M = translate(cloudsos[i]->M, vec3(0, 40+rand()%40, 0));
+		for (int i = 0; i < cloudsos[i]->xnum / cloudsos[i]->sectorsize; i++){
+			for (int j = 0; j < cloudsos[i]->ynum / cloudsos[i]->sectorsize-1; j++){
+				cloudsos[i]->CreateMesh(0, 0, 0, i, j);
+			}
+		}*/
 	}
 	windSpeed = windSpeed / cloudCount;
 	robots.push_back(Robot());
