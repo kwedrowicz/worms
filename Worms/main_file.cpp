@@ -67,7 +67,7 @@ void displayFrame(void) {
 	glMatrixMode(GL_PROJECTION);
 	glLoadMatrixf(value_ptr(P));
 	glMatrixMode(GL_MODELVIEW);
-	cloud.DrawMesh(V);
+	//cloud.DrawMesh(V);
 	wall.DrawMesh(V);
 	for (int i = 0; i < robots.size(); i++)
 	{
