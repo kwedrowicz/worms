@@ -239,6 +239,10 @@ void keyDown2(unsigned char c, int x, int y)
 
 void keyDown(int c, int x, int y)
 {
+	if (c == GLUT_KEY_F2)
+	{
+		SpawnRobot();
+	}
 	if (active == -1) return;
 	if (c == GLUT_KEY_LEFT)
 	{
@@ -268,15 +272,12 @@ void keyDown(int c, int x, int y)
 		if (active >= robots.size())
 			active = active % robots.size();
 	}
-	if (c == GLUT_KEY_F2)
-	{
-		SpawnRobot();
-	}
+
 }
 
 void SpawnRobot()
 {
-	if (robots.size() != 0)
+	if (robots.size() < 10)
 	{
 		robots.push_back(Robot());
 		robots[robots.size() - 1].body.tex_handle = texHandles[0];
@@ -285,8 +286,9 @@ void SpawnRobot()
 		robots[robots.size() - 1].right_arm.tex_handle = texHandles[0];
 		robots[robots.size() - 1].eyes.tex_handle = texHandles[1];
 		robots[robots.size() - 1].missile.tex_handle = texHandles[2];
-		robots[robots.size() - 1].M = robots[0].M;
-		if (robots[0].isTurnRight) robots[robots.size() - 1].M = rotate(robots[robots.size() - 1].M, radians(180.0f), vec3(0.0f, 1.0f, 0.0f));
+		robots[robots.size() - 1].M = scale(robots[robots.size() - 1].M, vec3(0.2f, 0.2f, 0.2f));
+		robots[robots.size() - 1].M = translate(robots[robots.size() - 1].M, vec3(-50 + rand() % 100, 25, 0));
+		if (active == -1) active++;
 	}
 }
 
